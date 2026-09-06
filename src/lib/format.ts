@@ -1,0 +1,19 @@
+export function cx(...parts: Array<string | false | null | undefined>) {
+  return parts.filter(Boolean).join(' ')
+}
+
+export function mailTo(email: string, subject?: string, body?: string) {
+  const params = new URLSearchParams()
+  if (subject) params.set('subject', subject)
+  if (body) params.set('body', body)
+  const query = params.toString()
+  return `mailto:${email}${query ? `?${query}` : ''}`
+}
+
+export function waTo(phone: string) {
+  return `https://wa.me/${phone.replace(/\D/g, '')}`
+}
+
+export function webUrl(url: string) {
+  return url.startsWith('http') ? url : `https://${url}`
+}

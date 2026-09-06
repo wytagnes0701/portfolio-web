@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-paper: #faf8f5;
+  --color-sticker: #fffdf9;
+  --color-gold: #c4a882;
+  --color-gold-soft: color-mix(in srgb, #c4a882 10%, transparent);
+  --color-nav: #7d8e95;
+  --color-ink: #3d3d3d;
+  --color-techo-blue: #d2e5ee;
+  --color-techo-purple: #a59aca;
+  --color-techo-grey: #e8eceb;
+  --color-techo-control: #7d8e95;
+  --color-washi-coral: #e2877b;
+  --color-morandi-pink: #e8c4c0;
+  --color-morandi-yellow: #e8d9b0;
+  --color-morandi-sage: #c5d1c3;
+  --color-desk: #f3eee6;
+  --font-sans: 'Noto Sans TC', 'Zen Kaku Gothic New', ui-sans-serif, system-ui, sans-serif;
+  --font-heading: 'Zen Kaku Gothic New', 'Noto Sans TC', sans-serif;
+  --font-script: 'Caveat', cursive;
+  --font-techo: 'Noto Sans TC', 'Zen Kaku Gothic New', sans-serif;
+  --font-display: 'Zen Kaku Gothic New', 'Noto Sans TC', sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-paper);
+}
+
+.desk-bg {
+  background-color: #f3eee6;
+  background-image:
+    radial-gradient(ellipse at 12% 8%, rgba(255, 232, 232, 0.55), transparent 32%),
+    radial-gradient(ellipse at 88% 12%, rgba(232, 244, 236, 0.45), transparent 28%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.035'/%3E%3C/svg%3E");
+}
+
+.notebook-page {
+  position: relative;
+  background:
+    linear-gradient(90deg, rgba(196, 168, 130, 0.07), transparent 18%, transparent 82%, rgba(196, 168, 130, 0.07)),
+    linear-gradient(180deg, #fffdf9 0%, #faf7f1 100%);
+  border-radius: 8px 8px 28px 28px;
+  box-shadow:
+    0 28px 70px rgba(61, 61, 61, 0.1),
+    inset 0 1px 0 #fff;
+}
+
+.notebook-page::before {
+  content: '';
+  position: absolute;
+  inset: 12% auto 12% 50%;
+  width: 1px;
+  background: rgba(196, 168, 130, 0.28);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.site-card {
+  position: relative;
+  background: #fffdfb;
+  border-radius: 24px;
+  box-shadow: 0 10px 32px rgba(61, 61, 61, 0.06);
+}
+
+.washi-corner {
+  position: absolute;
+  top: -8px;
+  width: 72px;
+  height: 22px;
+  opacity: 0.55;
+}
+
+.pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.pill-btn:hover {
+  transform: translateY(-1px);
+}
+
+.eyebrow {
+  font-family: var(--font-script);
+  font-size: 1.65rem;
+  color: #8a8178;
+}
+
+.stat-split > * + * {
+  border-left: 1px solid rgba(196, 168, 130, 0.45);
+}
+
+.notebook-page.no-spine::before {
+  display: none;
+}
+
