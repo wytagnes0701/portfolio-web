@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, Chip, EmptyState, MediaCard, MediaGrid, PageWrap, Pill, SectionHeading, Select } from '../components/ui'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { PROJECT_TYPES } from '../data/skills'
 import { strings, YEAR_FILTERS } from '../data/strings'
 

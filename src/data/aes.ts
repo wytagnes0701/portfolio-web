@@ -16,7 +16,7 @@ function fromBase64(value: string) {
 }
 
 function normalizePlainText(value: string) {
-  return value.replace(/\u0000/g, '').trim()
+  return value.replaceAll(String.fromCharCode(0), '').trim()
 }
 
 export async function decryptAesCbc(cipherText: string, keyUtf8 = AES_KEY): Promise<string> {

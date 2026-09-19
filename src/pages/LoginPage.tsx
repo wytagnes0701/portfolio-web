@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LoadingOverlay, PassCodeDialog } from '../components/Dialogs'
 import { Badge, Card, Field, Pill } from '../components/ui'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { EMAIL_PATTERN, SITE_VERSION, strings, VALID_PASSWORD_LENGTH } from '../data/strings'
 
 export function LoginPage() {

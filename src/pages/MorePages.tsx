@@ -5,7 +5,7 @@ import { TechoDialog } from '../components/Dialogs'
 import { AboutCard } from '../components/sections'
 import { Card, ContactGroup, PageWrap, SectionHeading, SettingsRow } from '../components/ui'
 import { developerContacts, youtuberContacts } from '../data/contacts'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
 import { mailTo, webUrl } from '../lib/format'
 

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ChannelCard, VideoPlayer } from '../components/sections'
 import { ContactGroup, MediaCard, MediaGrid, PageWrap, SectionHeading } from '../components/ui'
 import { youtubeCollabContacts, youtuberSocialContacts } from '../data/contacts'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
 import { videosFor, youtubeThumb, type YoutubeVideo } from '../data/youtube'
 

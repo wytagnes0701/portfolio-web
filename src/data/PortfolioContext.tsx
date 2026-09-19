@@ -1,12 +1,4 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { child, get, ref as dbRef } from 'firebase/database'
 import { ensureInitialized, fetchAndActivate, getValue } from 'firebase/remote-config'
@@ -15,6 +7,7 @@ import { decryptAesCbc } from './aes'
 import { sortWorkingExperience } from './experience'
 import { getFirebase, isFirebaseConfigured } from './firebase'
 import { decodeRtdbNewlines } from '../lib/format'
+import { PortfolioContext } from './portfolio-context'
 import type {
   EduItem,
   ExpItem,
@@ -34,31 +27,12 @@ import {
   fetchYoutubeLive,
 } from './youtube'
 
-type PortfolioContextValue = {
-  snapshot: PortfolioSnapshot
-  accountInfo: MasterAccountInfo | null
-  youtubeSocial: YoutubeSocial
-  liveStats: YoutubeLiveStats | null
-  liveVideos: YoutubeLiveVideo[]
-  loginEmail: string
-  isReady: boolean
-  fetchConfig: () => Promise<MasterLogin | null>
-  login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
-  validatePasscode: (passcode: string) => Promise<boolean>
-  fillMasterCredentials: () => Promise<{ email: string; password: string }>
-  getProject: (id: number) => PortfolioItem | undefined
-  resolveGallery: (item: PortfolioItem) => Promise<string[]>
-}
-
 const emptySnapshot: PortfolioSnapshot = {
   portfolios: [],
   education: [],
   workingExperience: [],
   youtubeChannel: emptyYoutubeChannel,
 }
-
-const PortfolioContext = createContext<PortfolioContextValue | null>(null)
 
 function asNumber(value: unknown): number | null {
   if (typeof value === 'number') return value
@@ -298,7 +272,6 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false)
   const masterLoginRef = useRef<MasterLogin | null>(null)
   const liveLoadId = useRef(0)
-  masterLoginRef.current = masterLogin
 
   const fetchConfig = useCallback(async () => {
     if (masterLoginRef.current) return masterLoginRef.current
@@ -462,12 +435,4 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
   )
 
   return <PortfolioContext.Provider value={value}>{children}</PortfolioContext.Provider>
-}
-
-export function usePortfolio() {
-  const context = useContext(PortfolioContext)
-  if (!context) {
-    throw new Error('usePortfolio must be used inside PortfolioProvider')
-  }
-  return context
 }

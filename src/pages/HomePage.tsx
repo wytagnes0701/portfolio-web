@@ -12,7 +12,7 @@ import {
   StatRow,
 } from '../components/ui'
 import { developerContacts, youtuberContacts } from '../data/contacts'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
 import { videosFor, youtubeThumb } from '../data/youtube'
 

@@ -1,6 +1,6 @@
 import { Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
 import { TechoDialog } from './Dialogs'
 import { SiteFooter, SiteHeader } from './SiteHeader'

@@ -1,6 +1,6 @@
 import { EducationList } from '../components/sections'
 import { PageWrap, SectionHeading } from '../components/ui'
-import { usePortfolio } from '../data/PortfolioContext'
+import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
 
 export function EducationPage() {

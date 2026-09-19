@@ -267,5 +267,5 @@ Product and UI decisions since the site was scaffolded:
 ## Notes
 
 - This repo does not modify the Android app.
-- Remote Config and RTDB payloads are treated as untrusted JSON and parsed in `PortfolioContext`.
+- Remote Config and RTDB payloads are treated as untrusted JSON and parsed in `PortfolioContext.tsx`.
 - Do not commit `.env.local` or paste production secrets into issues or docs.
