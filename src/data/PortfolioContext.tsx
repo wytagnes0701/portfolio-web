@@ -2,11 +2,11 @@ import { useCallback, useMemo, useRef, useState, type ReactNode } from 'react'
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth'
 import { child, get, ref as dbRef } from 'firebase/database'
 import { ensureInitialized, fetchAndActivate, getValue } from 'firebase/remote-config'
-import { getDownloadURL, ref as storageRef } from 'firebase/storage'
 import { decryptAesCbc } from './aes'
 import { sortWorkingExperience } from './experience'
 import { getFirebase, isFirebaseConfigured } from './firebase'
 import { decodeRtdbNewlines } from '../lib/format'
+import { localPortfolioUrl } from './portfolio-images'
 import { PortfolioContext } from './portfolio-context'
 import type {
   EduItem,
@@ -179,10 +179,33 @@ function parseContact(raw: unknown): MasterAccountInfo | null {
 }
 
 function snapshotToList(value: unknown): Record<string, unknown>[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object')
+  }
   if (!value || typeof value !== 'object') return []
   return Object.values(value as Record<string, unknown>).filter(
     (item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object',
   )
+}
+
+function snapshotToOrderedList(value: unknown): Record<string, unknown>[] {
+  if (Array.isArray(value)) {
+    return value.filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object')
+  }
+  if (!value || typeof value !== 'object') return []
+  return Object.entries(value as Record<string, unknown>)
+    .sort(([left], [right]) => {
+      const leftIndex = Number.parseInt(left, 10)
+      const rightIndex = Number.parseInt(right, 10)
+      const leftValid = !Number.isNaN(leftIndex)
+      const rightValid = !Number.isNaN(rightIndex)
+      if (leftValid && rightValid) return leftIndex - rightIndex
+      if (leftValid) return -1
+      if (rightValid) return 1
+      return left.localeCompare(right)
+    })
+    .map(([, item]) => item)
+    .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object')
 }
 
 function readJsonObject(raw: string): Record<string, unknown> | null {
@@ -246,19 +269,8 @@ function withTimeout<T>(promise: Promise<T>, ms: number, message: string): Promi
   })
 }
 
-async function resolveStorageUrl(path: string | null | undefined) {
-  if (!path) return null
-  if (path.startsWith('http://') || path.startsWith('https://')) return path
-  try {
-    const { storage } = getFirebase()
-    return await withTimeout(
-      getDownloadURL(storageRef(storage, path)),
-      15000,
-      'Storage timeout',
-    )
-  } catch {
-    return null
-  }
+function resolveLocalImage(name: string | null | undefined) {
+  return localPortfolioUrl(name)
 }
 
 export function PortfolioProvider({ children }: { children: ReactNode }) {
@@ -312,19 +324,18 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       .map(parseEducation)
       .filter((item): item is EduItem => item != null)
       .sort((a, b) => b.id - a.id)
-    const portfolios = snapshotToList(portfolioSnap.val())
+    const portfolios = snapshotToOrderedList(portfolioSnap.val())
       .map(parsePortfolio)
       .filter((item): item is PortfolioItem => item != null)
-    const resolved = await Promise.all(
-      portfolios.map(async (item) => {
-        const cover = await resolveStorageUrl(item.cover)
-        return { ...item, cover }
-      }),
-    )
+      .map((item) => ({
+        ...item,
+        cover: resolveLocalImage(item.cover),
+        imgURL: item.imgURL.map((name) => resolveLocalImage(name)).filter((url): url is string => Boolean(url)),
+      }))
     const youtubeChannel = parseYoutubeChannel(youtubeSnap.val())
     const contact = parseContact(contactSnap.val())
     setSnapshot({
-      portfolios: resolved,
+      portfolios,
       education,
       workingExperience,
       youtubeChannel,
@@ -395,8 +406,7 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
 
   const resolveGallery = useCallback(async (item: PortfolioItem) => {
     const cover = item.cover ? [item.cover] : []
-    const gallery = await Promise.all(item.imgURL.map((path) => resolveStorageUrl(path)))
-    return [...cover, ...gallery.filter((url): url is string => Boolean(url))]
+    return [...cover, ...item.imgURL]
   }, [])
 
   const value = useMemo(

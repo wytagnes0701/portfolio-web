@@ -1,0 +1,63 @@
+/** Maps RTDB Cover / ImgURL resource names to files in public/images/portfolio/. */
+export const PORTFOLIO_IMAGE_FILES: Record<string, string> = {
+  'portfolio_10_cover': '/images/portfolio/portfolio_10_cover.png',
+  'portfolio_11_cover': '/images/portfolio/portfolio_11_cover.jpg',
+  'portfolio_12_cover': '/images/portfolio/portfolio_12_cover.png',
+  'portfolio_13_cover': '/images/portfolio/portfolio_13_cover.jpg',
+  'portfolio_14_1': '/images/portfolio/portfolio_14_1.png',
+  'portfolio_14_cover': '/images/portfolio/portfolio_14_cover.jpg',
+  'portfolio_15_cover': '/images/portfolio/portfolio_15_cover.png',
+  'portfolio_16_cover': '/images/portfolio/portfolio_16_cover.jpg',
+  'portfolio_17_cover': '/images/portfolio/portfolio_17_cover.jpg',
+  'portfolio_18_cover': '/images/portfolio/portfolio_18_cover.png',
+  'portfolio_19_cover': '/images/portfolio/portfolio_19_cover.jpg',
+  'portfolio_1_1': '/images/portfolio/portfolio_1_1.png',
+  'portfolio_1_cover': '/images/portfolio/portfolio_1_cover.png',
+  'portfolio_20_cover': '/images/portfolio/portfolio_20_cover.png',
+  'portfolio_21_1': '/images/portfolio/portfolio_21_1.png',
+  'portfolio_21_cover': '/images/portfolio/portfolio_21_cover.png',
+  'portfolio_22_1': '/images/portfolio/portfolio_22_1.png',
+  'portfolio_22_cover': '/images/portfolio/portfolio_22_cover.jpg',
+  'portfolio_23_cover': '/images/portfolio/portfolio_23_cover.jpg',
+  'portfolio_24_1': '/images/portfolio/portfolio_24_1.jpg',
+  'portfolio_24_cover': '/images/portfolio/portfolio_24_cover.jpg',
+  'portfolio_25_1': '/images/portfolio/portfolio_25_1.jpg',
+  'portfolio_25_cover': '/images/portfolio/portfolio_25_cover.jpg',
+  'portfolio_26_cover': '/images/portfolio/portfolio_26_cover.jpg',
+  'portfolio_27_cover': '/images/portfolio/portfolio_27_cover.jpg',
+  'portfolio_28_cover': '/images/portfolio/portfolio_28_cover.jpg',
+  'portfolio_29_cover': '/images/portfolio/portfolio_29_cover.png',
+  'portfolio_2_1': '/images/portfolio/portfolio_2_1.png',
+  'portfolio_2_cover': '/images/portfolio/portfolio_2_cover.png',
+  'portfolio_30_cover': '/images/portfolio/portfolio_30_cover.jpg',
+  'portfolio_31_cover': '/images/portfolio/portfolio_31_cover.jpg',
+  'portfolio_32_1': '/images/portfolio/portfolio_32_1.jpg',
+  'portfolio_32_cover': '/images/portfolio/portfolio_32_cover.jpg',
+  'portfolio_33_cover': '/images/portfolio/portfolio_33_cover.png',
+  'portfolio_34_cover': '/images/portfolio/portfolio_34_cover.png',
+  'portfolio_35_cover': '/images/portfolio/portfolio_35_cover.png',
+  'portfolio_36_1': '/images/portfolio/portfolio_36_1.jpg',
+  'portfolio_36_cover': '/images/portfolio/portfolio_36_cover.jpg',
+  'portfolio_37_cover': '/images/portfolio/portfolio_37_cover.png',
+  'portfolio_38_cover': '/images/portfolio/portfolio_38_cover.png',
+  'portfolio_39_cover': '/images/portfolio/portfolio_39_cover.png',
+  'portfolio_3_1': '/images/portfolio/portfolio_3_1.png',
+  'portfolio_3_cover': '/images/portfolio/portfolio_3_cover.png',
+  'portfolio_40_cover': '/images/portfolio/portfolio_40_cover.png',
+  'portfolio_41_cover': '/images/portfolio/portfolio_41_cover.png',
+  'portfolio_42_cover': '/images/portfolio/portfolio_42_cover.png',
+  'portfolio_4_cover': '/images/portfolio/portfolio_4_cover.png',
+  'portfolio_5_cover': '/images/portfolio/portfolio_5_cover.jpg',
+  'portfolio_6_cover': '/images/portfolio/portfolio_6_cover.jpg',
+  'portfolio_7_cover': '/images/portfolio/portfolio_7_cover.png',
+  'portfolio_8_cover': '/images/portfolio/portfolio_8_cover.png',
+  'portfolio_9_cover': '/images/portfolio/portfolio_9_cover.jpg',
+}
+
+export function localPortfolioUrl(name: string | null | undefined): string | null {
+  if (!name) return null
+  const file = name.split('/').pop() ?? ''
+  const stem = file.includes('.') ? file.slice(0, file.lastIndexOf('.')) : file
+  if (!stem) return null
+  return PORTFOLIO_IMAGE_FILES[stem] ?? null
+}

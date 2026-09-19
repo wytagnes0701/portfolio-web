@@ -4,7 +4,7 @@ Personal portfolio site for Agnes Wong (Hong Kong software engineer; YouTube cha
 
 Content for work, education, and projects comes from the same Firebase project as the Android app (`agnes-profile`). The Android repo stays separate and is not part of this codebase.
 
-Site version: **1.0.0**
+Site version: **1.1.0**
 
 ---
 
@@ -15,7 +15,7 @@ Site version: **1.0.0**
 | App | Vite 8, React 19, TypeScript |
 | Routing | React Router 7 |
 | Styling | Tailwind CSS v4 (`@tailwindcss/vite`) |
-| Data | Firebase Auth, Realtime Database, Storage, Remote Config |
+| Data | Firebase Auth, Realtime Database, Remote Config |
 | Other | `qrcode.react` for contact QR codes |
 
 ---
@@ -82,7 +82,7 @@ Create a **Web** app in Firebase Console for project `agnes-profile` and put the
 - `VITE_FIREBASE_AUTH_DOMAIN`
 - `VITE_FIREBASE_DATABASE_URL` — `https://agnes-profile-default-rtdb.firebaseio.com`
 - `VITE_FIREBASE_PROJECT_ID`
-- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_STORAGE_BUCKET` — unused (covers are local files; kept only if you still have it in `.env.local`)
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID` — Web app id, not the Android id
 - `VITE_AES_KEY` — same value as the Android AES key
@@ -97,7 +97,7 @@ Also add `localhost` and, for GitHub Pages, `wytagnes0701.github.io` under **Aut
 | Auth | email / password | Login gate |
 | Remote Config | `master_login`, `youtube_social` | Master fill (AES-CBC, zero IV, UTF-8 key) + YouTube / Instagram / Facebook URLs and handles |
 | Realtime Database | `WorkingExperience`, `Education`, `Portfolio`, `YoutubeChannel`, `Contact` | Experience, studies, projects, channel copy, developer contact |
-| Storage | cover / gallery paths | Project images |
+| Local files | `public/images/portfolio/` | Project covers and gallery (same originals as the Android `drawable-nodpi` set). RTDB `Cover` / `ImgURL` are resource names such as `portfolio_39_cover` |
 | YouTube Data API | `VITE_YOUTUBE_API_KEY` | Live subscriber / video / view counts and long-form uploads (Shorts dropped). Blank or failed request uses RTDB fallbacks |
 
 Firebase Console string fields are single-line. Typed `\n` (or JSON `"line1\nline2"`) is decoded into line breaks.
@@ -133,8 +133,8 @@ Hero is a notebook spread: name, tagline, CTAs (work / experience / education / 
 
 ### Portfolio
 
-- `/projects` — overlay cards, filter by year and project type, removable filter chips, empty state.
-- `/project/:itemId` — description, further info, skill icons, embedded YouTube, gallery + icon-list dialogs.
+- `/projects` — overlay cards, filter by year (**2013–2023**) and project type, removable filter chips, empty state. List order is the RTDB `Portfolio` array (`0` SoePay, `1` PayServer, `2` AURALBOOK, …).
+- `/project/:itemId` — description, further info, skill icons, embedded YouTube, gallery + icon-list dialogs. `http://` / `https://` lines (Play Store, project sites) are gold underlined links that open in a new tab.
 - `/gallery/:itemId` — thumbnail grid; tap to enlarge.
 
 Working experience is sorted **newest first**, including roles inside the same company (`src/data/experience.ts`). Category labels come from `EXPERIENCE_TABS` (`fintech`, `music education`, `event`, `media`).
@@ -214,7 +214,7 @@ src/
   hooks/          ScrollOnRouteChange
   lib/            class names, mailto / WhatsApp / https, RTDB newline decode
   pages/          splash, login, home, projects, detail, gallery, experience, education, youtube, about, contact
-public/           icons, images (including Android `youtube_icon.png`), favicon
+public/           icons, images (including Android `youtube_icon.png` and `images/portfolio/` covers), favicon
 ```
 
 Copy lives in `src/data/strings.ts`. Skill and contact icons live in `public/icons/`; raster marks (channel avatar, polaroid, empty state) are in `public/images/`.
@@ -261,6 +261,7 @@ Product and UI decisions since the site was scaffolded:
 14. **Contact icons** — every contact method is `icon + label`; social/WhatsApp/Web SVGs retinted to ink.
 15. **Latest videos CTA** — Home `#videos` under the grid is **更多** → `/youtube`. **前往頻道** remains only on the channel card.
 16. **GitHub Pages** — Actions builds with repo secrets and deploys to `https://wytagnes0701.github.io/portfolio-web/`.
+17. **Match Android 1.04** — RTDB list order and `ID` = index; Wix original covers/gallery in `public/images/portfolio/` (no Storage); year chips **2013–2023**; tappable `http(s)` URLs on project detail.
 
 ---
 

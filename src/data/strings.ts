@@ -1,4 +1,4 @@
-export const SITE_VERSION = '1.0.0'
+export const SITE_VERSION = '1.1.0'
 
 export const strings = {
   appName: 'Portfolio',
@@ -131,5 +131,5 @@ For fun, Agnes enjoys reading, traveling, listen to music, and playing music wit
 
 export const EMAIL_PATTERN = /^[\w.-]+@([\w-]+\.)+[A-Z]{2,8}$/i
 export const VALID_PASSWORD_LENGTH = 8
-export const YEAR_FILTERS = ['2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+export const YEAR_FILTERS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
 export const EXPERIENCE_TABS = ['fintech', 'music education', 'event', 'media'] as const

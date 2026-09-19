@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TechoDialog } from '../components/Dialogs'
-import { BackLink, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
+import { BackLink, LinkifiedLine, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { SKILLS, skillsFromTagIndex } from '../data/skills'
 import { strings } from '../data/strings'
@@ -50,7 +50,7 @@ export function ProjectDetailPage() {
           <h2 className="font-heading text-2xl font-bold">{strings.descriptionTitle}</h2>
           <ul className="mt-3 space-y-1 text-ink/80">
             {project.description.map((line) => (
-              <li key={line}>- {line}</li>
+              <LinkifiedLine key={line} text={line} />
             ))}
           </ul>
         </section>
@@ -67,7 +67,7 @@ export function ProjectDetailPage() {
           <h2 className="font-heading text-2xl font-bold">{strings.furtherInfoTitle}</h2>
           <ul className="mt-3 space-y-1 text-ink/80">
             {project.furtherInfo.map((line) => (
-              <li key={line}>- {line}</li>
+              <LinkifiedLine key={line} text={line} />
             ))}
           </ul>
         </section>

@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
 import { Link } from 'react-router-dom'
 import type { ContactItem } from '../data/contacts'
-import { cx, publicUrl } from '../lib/format'
+import { cx, publicUrl, splitHttpUrlParts } from '../lib/format'
 
 function externalProps(href: string) {
   return href.startsWith('http') ? { target: '_blank' as const, rel: 'noreferrer' } : {}
@@ -425,6 +425,30 @@ export function Thumbnail({ src, onClick }: { src: string; onClick: () => void }
 
 export function SkillIcon({ src, label }: { src: string; label?: string }) {
   return <img src={publicUrl(src)} alt={label ?? ''} className="h-6 w-6 shrink-0 object-contain" />
+}
+
+export function LinkifiedLine({ text }: { text: string }) {
+  const parts = splitHttpUrlParts(text)
+  return (
+    <li>
+      -{' '}
+      {parts.map((part, index) =>
+        part.href ? (
+          <a
+            key={`${part.href}-${index}`}
+            href={part.href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-gold underline underline-offset-2 hover:text-washi-coral"
+          >
+            {part.text}
+          </a>
+        ) : (
+          <span key={index}>{part.text}</span>
+        ),
+      )}
+    </li>
+  )
 }
 
 export function SectionHeading({
