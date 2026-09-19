@@ -120,6 +120,7 @@ For fun, Agnes enjoys reading, traveling, listen to music, and playing music wit
   youtubeEyebrow: 'channel',
   contactEyebrow: 'get in touch',
   viewAllWork: 'View all projects',
+  youtubeMore: '更多',
   featuredVideos: 'Latest videos',
   footerCopy: '© 2026 Agnes Wong. All rights reserved.',
   footerFrom: 'Made from Hong Kong',

@@ -1,7 +1,6 @@
 import { mailTo, waTo, webUrl } from '../lib/format'
 import { strings } from './strings'
-import type { MasterAccountInfo } from './types'
-import { YoutubeChannelContent } from './youtube'
+import type { MasterAccountInfo, YoutubeChannel, YoutubeSocial } from './types'
 
 export type ContactItem = {
   icon: string
@@ -41,32 +40,65 @@ export function developerContacts(info: MasterAccountInfo | null): ContactItem[]
   ].filter((item) => Boolean(item.value))
 }
 
-export function youtuberContacts(): ContactItem[] {
-  const channel = YoutubeChannelContent
+export function youtuberSocialContacts(
+  channel: YoutubeChannel,
+  social: YoutubeSocial,
+): ContactItem[] {
   return [
     {
       icon: '/icons/ic_youtube.svg',
       label: strings.labelYoutube,
-      value: strings.youtubeChannelHandle,
-      href: channel.channelUrl,
-    },
-    {
-      icon: '/icons/ic_email.svg',
-      label: strings.labelEmail,
-      value: channel.collabEmail,
-      href: mailTo(channel.collabEmail, strings.youtubeCollabEmailSubject),
+      value: channel.handle,
+      href: social.channelUrl,
     },
     {
       icon: '/icons/ic_instagram.svg',
       label: strings.labelInstagram,
-      value: channel.instagramHandle,
-      href: channel.instagramUrl,
+      value: social.instagramHandle,
+      href: social.instagramUrl,
     },
     {
       icon: '/icons/ic_facebook.svg',
       label: strings.labelFacebook,
-      value: channel.facebookHandle,
-      href: channel.facebookUrl,
+      value: social.facebookHandle,
+      href: social.facebookUrl,
     },
-  ]
+  ].filter((item) => Boolean(item.value))
+}
+
+export function youtubeCollabContacts(
+  channel: YoutubeChannel,
+  contact: MasterAccountInfo | null,
+): ContactItem[] {
+  return [
+    {
+      icon: '/icons/ic_email.svg',
+      label: strings.labelEmail,
+      value: channel.collabEmail,
+      href: channel.collabEmail ? mailTo(channel.collabEmail, strings.youtubeCollabEmailSubject) : undefined,
+    },
+    {
+      icon: '/icons/ic_message.svg',
+      label: strings.labelWhatsapp,
+      value: contact?.whatsApp,
+      href: contact?.whatsApp ? waTo(contact.whatsApp) : undefined,
+    },
+  ].filter((item) => Boolean(item.value))
+}
+
+export function youtuberContacts(channel: YoutubeChannel, social: YoutubeSocial): ContactItem[] {
+  const collabEmail = channel.collabEmail
+    ? {
+        icon: '/icons/ic_email.svg',
+        label: strings.labelEmail,
+        value: channel.collabEmail,
+        href: mailTo(channel.collabEmail, strings.youtubeCollabEmailSubject),
+      }
+    : null
+  const socialItems = youtuberSocialContacts(channel, social)
+  return [
+    socialItems.find((item) => item.label === strings.labelYoutube),
+    collabEmail,
+    ...socialItems.filter((item) => item.label !== strings.labelYoutube),
+  ].filter((item): item is ContactItem => item != null)
 }

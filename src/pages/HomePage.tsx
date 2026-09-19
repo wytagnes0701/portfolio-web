@@ -14,11 +14,13 @@ import {
 import { developerContacts, youtuberContacts } from '../data/contacts'
 import { usePortfolio } from '../data/PortfolioContext'
 import { strings } from '../data/strings'
-import { YoutubeChannelContent, youtubeThumb } from '../data/youtube'
+import { videosFor, youtubeThumb } from '../data/youtube'
 
 export function HomePage() {
   const navigate = useNavigate()
-  const { snapshot, accountInfo } = usePortfolio()
+  const { snapshot, accountInfo, youtubeSocial, liveStats, liveVideos } = usePortfolio()
+  const channel = snapshot.youtubeChannel
+  const latestVideos = videosFor(channel, liveVideos, null).slice(0, 6)
 
   return (
     <div>
@@ -95,25 +97,29 @@ export function HomePage() {
           id="videos"
           className="mt-24"
           eyebrow={strings.youtubeEyebrow}
-          title={strings.youtubeChannelName}
-          subtitle={strings.channelsSubtitle}
+          title={channel.channelName || strings.youtubeChannelName}
+          subtitle={channel.slogan || strings.channelsSubtitle}
         >
-          <ChannelCard />
+          <ChannelCard channel={channel} social={youtubeSocial} liveStats={liveStats} />
           <Section eyebrow="featured videos" title={strings.featuredVideos}>
-            <MediaGrid tight>
-              {YoutubeChannelContent.videos.slice(0, 6).map((video) => (
-                <MediaCard
-                  key={video.id}
-                  imageUrl={youtubeThumb(video.id)}
-                  title={video.title}
-                  onClick={() => navigate('/youtube')}
-                />
-              ))}
-            </MediaGrid>
+            {latestVideos.length === 0 ? (
+              <p className="py-6 text-center text-nav">{strings.youtubeEmptyVideos}</p>
+            ) : (
+              <MediaGrid tight>
+                {latestVideos.map((video) => (
+                  <MediaCard
+                    key={video.id}
+                    imageUrl={youtubeThumb(video.id)}
+                    title={video.title}
+                    onClick={() => navigate('/youtube')}
+                  />
+                ))}
+              </MediaGrid>
+            )}
           </Section>
           <CenterAction>
             <Pill to="/youtube" variant="ghost">
-              {strings.youtubeOpenChannel}
+              {strings.youtubeMore}
             </Pill>
           </CenterAction>
         </Section>
@@ -127,9 +133,9 @@ export function HomePage() {
             />
             <ContactGroup
               title={strings.contactYoutuber}
-              kicker={strings.youtubeChannelName}
+              kicker={channel.channelName || strings.youtubeChannelName}
               subtitle={strings.youtubeSocialInvite}
-              items={youtuberContacts()}
+              items={youtuberContacts(channel, youtubeSocial)}
             />
           </div>
         </Section>

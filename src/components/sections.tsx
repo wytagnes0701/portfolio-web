@@ -1,7 +1,18 @@
 import { useState, type ReactNode } from 'react'
-import type { EduItem, ExpItem } from '../data/types'
+import type {
+  EduItem,
+  ExpItem,
+  YoutubeChannel,
+  YoutubeLiveStats,
+  YoutubeSocial,
+  YoutubeVideo,
+} from '../data/types'
 import { strings } from '../data/strings'
-import { YoutubeChannelContent, youtubeTagList, type YoutubeVideo } from '../data/youtube'
+import {
+  subscriberDisplay,
+  videoCountDisplay,
+  viewCountDisplay,
+} from '../data/youtube'
 import {
   Card,
   Overlay,
@@ -80,36 +91,70 @@ export function EducationList({ items }: { items: EduItem[] }) {
   )
 }
 
-export function ChannelCard() {
-  const channel = YoutubeChannelContent
+export function ChannelCard({
+  channel,
+  social,
+  liveStats,
+  selectedTag,
+  onSelectTag,
+}: {
+  channel: YoutubeChannel
+  social: YoutubeSocial
+  liveStats: YoutubeLiveStats | null
+  selectedTag?: string | null
+  onSelectTag?: (tag: string | null) => void
+}) {
+  const channelName = channel.channelName || strings.youtubeChannelName
+  const handle = channel.handle || strings.youtubeChannelHandle
   return (
     <Card className="mb-12 p-8">
       <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
         <img
-          src="/images/about_me.jpg"
-          alt={strings.youtubeCreatorName}
-          className="h-16 w-16 rounded-full object-cover"
+          src="/images/youtube_icon.png"
+          alt={channel.creatorName || strings.youtubeCreatorName}
+          className="h-16 w-16 rounded-full bg-white object-cover"
         />
         <div className="flex-1">
-          <h3 className="font-heading text-2xl font-bold">{strings.youtubeChannelName}</h3>
-          <p className="text-nav">{strings.youtubeChannelHandle}</p>
+          <h3 className="font-heading text-2xl font-bold">{channelName}</h3>
+          <p className="text-nav">{handle}</p>
+          {channel.slogan ? <p className="mt-1 text-sm text-ink">{channel.slogan}</p> : null}
         </div>
-        <Pill href={channel.channelUrl} variant="ghost">
-          {strings.youtubeOpenChannel}
-        </Pill>
+        {social.channelUrl ? (
+          <Pill href={social.channelUrl} variant="ghost">
+            {strings.youtubeOpenChannel}
+          </Pill>
+        ) : null}
       </div>
-      <p className="mt-4 whitespace-pre-wrap text-nav">{strings.youtubeChannelDescription}</p>
+      {channel.description ? (
+        <p className="mt-4 whitespace-pre-wrap text-nav">{channel.description}</p>
+      ) : null}
       <StatRow
         size="sm"
         items={[
-          { value: channel.subscriberCount, label: strings.youtubeStatSubscribers },
-          { value: channel.videoCount, label: strings.youtubeStatVideos },
-          { value: channel.viewCount, label: strings.youtubeStatViews },
+          { value: subscriberDisplay(channel, liveStats), label: strings.youtubeStatSubscribers },
+          { value: videoCountDisplay(channel, liveStats), label: strings.youtubeStatVideos },
+          { value: viewCountDisplay(channel, liveStats), label: strings.youtubeStatViews },
           { value: channel.joinedDate, label: strings.youtubeStatJoined },
-        ]}
+        ].filter((item) => Boolean(item.value))}
       />
-      <h3 className="mb-3 mt-8 text-center font-heading text-lg font-bold md:text-left">{strings.youtubeSectionTags}</h3>
-      <TagList tags={youtubeTagList} />
+      {channel.pillars.length > 0 ? (
+        <div className="mt-6">
+          <TagList tags={channel.pillars} prefix="" variant="pillar" />
+        </div>
+      ) : null}
+      {channel.tags.length > 0 ? (
+        <>
+          <h3 className="mb-3 mt-8 text-center font-heading text-lg font-bold md:text-left">
+            {strings.youtubeSectionTags}
+          </h3>
+          <TagList
+            tags={channel.tags}
+            selected={selectedTag}
+            onSelect={onSelectTag}
+            variant="price"
+          />
+        </>
+      ) : null}
     </Card>
   )
 }

@@ -14,6 +14,7 @@ import { getDownloadURL, ref as storageRef } from 'firebase/storage'
 import { decryptAesCbc } from './aes'
 import { sortWorkingExperience } from './experience'
 import { getFirebase, isFirebaseConfigured } from './firebase'
+import { decodeRtdbNewlines } from '../lib/format'
 import type {
   EduItem,
   ExpItem,
@@ -21,11 +22,24 @@ import type {
   MasterLogin,
   PortfolioItem,
   PortfolioSnapshot,
+  YoutubeChannel,
+  YoutubeLiveStats,
+  YoutubeLiveVideo,
+  YoutubeSocial,
+  YoutubeVideo,
 } from './types'
+import {
+  emptyYoutubeChannel,
+  emptyYoutubeSocial,
+  fetchYoutubeLive,
+} from './youtube'
 
 type PortfolioContextValue = {
   snapshot: PortfolioSnapshot
   accountInfo: MasterAccountInfo | null
+  youtubeSocial: YoutubeSocial
+  liveStats: YoutubeLiveStats | null
+  liveVideos: YoutubeLiveVideo[]
   loginEmail: string
   isReady: boolean
   fetchConfig: () => Promise<MasterLogin | null>
@@ -41,6 +55,7 @@ const emptySnapshot: PortfolioSnapshot = {
   portfolios: [],
   education: [],
   workingExperience: [],
+  youtubeChannel: emptyYoutubeChannel,
 }
 
 const PortfolioContext = createContext<PortfolioContextValue | null>(null)
@@ -54,12 +69,25 @@ function asNumber(value: unknown): number | null {
 }
 
 function asString(value: unknown): string {
-  return typeof value === 'string' ? value : ''
+  if (typeof value === 'string') return decodeRtdbNewlines(value)
+  if (typeof value === 'number') return String(value)
+  return ''
 }
 
 function splitLines(value: unknown): string[] {
-  if (Array.isArray(value)) return value.map((item) => String(item)).filter(Boolean)
-  if (typeof value === 'string' && value.length > 0) return value.split('\n')
+  if (Array.isArray(value)) return value.map((item) => asString(item)).filter(Boolean)
+  if (typeof value === 'string' && value.length > 0) return asString(value).split('\n').filter(Boolean)
+  return []
+}
+
+function asStringList(value: unknown): string[] {
+  if (Array.isArray(value)) return value.map((item) => asString(item)).filter(Boolean)
+  if (typeof value === 'string' && value.length > 0) return asString(value).split('\n').filter(Boolean)
+  if (value && typeof value === 'object') {
+    return Object.values(value as Record<string, unknown>)
+      .map((item) => asString(item))
+      .filter(Boolean)
+  }
   return []
 }
 
@@ -111,6 +139,71 @@ function parseExperience(raw: Record<string, unknown>): ExpItem | null {
   }
 }
 
+function parseYoutubeVideo(raw: unknown): YoutubeVideo | null {
+  if (!raw || typeof raw !== 'object') return null
+  const source = raw as Record<string, unknown>
+  const id = asString(source.Id)
+  if (!id) return null
+  return {
+    id,
+    title: asString(source.Title),
+    tags: asStringList(source.Tags),
+  }
+}
+
+function parseYoutubeVideos(raw: unknown): YoutubeVideo[] {
+  if (!raw || typeof raw !== 'object') return []
+  return Object.entries(raw as Record<string, unknown>)
+    .sort(([left], [right]) => {
+      const leftIndex = Number.parseInt(left, 10)
+      const rightIndex = Number.parseInt(right, 10)
+      const leftValid = !Number.isNaN(leftIndex)
+      const rightValid = !Number.isNaN(rightIndex)
+      if (leftValid && rightValid) return leftIndex - rightIndex
+      if (leftValid) return -1
+      if (rightValid) return 1
+      return left.localeCompare(right)
+    })
+    .map(([, value]) => parseYoutubeVideo(value))
+    .filter((video): video is YoutubeVideo => video != null)
+}
+
+function parseYoutubeChannel(raw: unknown): YoutubeChannel {
+  if (!raw || typeof raw !== 'object') return emptyYoutubeChannel
+  const source = raw as Record<string, unknown>
+  return {
+    handle: asString(source.Handle),
+    channelId: asString(source.ChannelId),
+    subscriberCount: asString(source.SubscriberCount),
+    videoCount: asString(source.VideoCount),
+    viewCount: asString(source.ViewCount),
+    joinedDate: asString(source.JoinedDate),
+    creatorName: asString(source.CreatorName),
+    creatorBio: asString(source.CreatorBio),
+    channelName: asString(source.ChannelName),
+    slogan: asString(source.Slogan),
+    description: asString(source.Description),
+    collabInvite: asString(source.CollabInvite),
+    collabEmail: asString(source.CollabEmail),
+    pillars: asStringList(source.Pillars),
+    tags: asStringList(source.Tags),
+    videos: parseYoutubeVideos(source.Videos),
+  }
+}
+
+function parseContact(raw: unknown): MasterAccountInfo | null {
+  if (!raw || typeof raw !== 'object') return null
+  const source = raw as Record<string, unknown>
+  const info: MasterAccountInfo = {
+    whatsApp: asString(source.WhatsApp),
+    email: asString(source.Email),
+    linkedIn: asString(source.LinkedIn),
+    web: asString(source.Web),
+  }
+  if (!info.whatsApp && !info.email && !info.linkedIn && !info.web) return null
+  return info
+}
+
 function snapshotToList(value: unknown): Record<string, unknown>[] {
   if (!value || typeof value !== 'object') return []
   return Object.values(value as Record<string, unknown>).filter(
@@ -136,6 +229,7 @@ function readField(source: Record<string, unknown>, ...keys: string[]) {
   for (const key of keys) {
     const value = lookup[key.toLowerCase()]
     if (typeof value === 'string' && value.length > 0) return value
+    if (typeof value === 'number') return String(value)
   }
   return ''
 }
@@ -150,14 +244,15 @@ function parseMasterLogin(raw: string): MasterLogin | null {
   return { email, password, passCode }
 }
 
-function parseAccountInfo(raw: string): MasterAccountInfo | null {
+function parseYoutubeSocial(raw: string): YoutubeSocial {
   const source = readJsonObject(raw)
-  if (!source) return null
+  if (!source) return emptyYoutubeSocial
   return {
-    whatsApp: readField(source, 'whatsApp', 'whatsapp'),
-    email: readField(source, 'email'),
-    linkedIn: readField(source, 'linkedIn', 'linkedin'),
-    web: readField(source, 'web'),
+    channelUrl: readField(source, 'ChannelUrl'),
+    instagramUrl: readField(source, 'InstagramUrl'),
+    facebookUrl: readField(source, 'FacebookUrl'),
+    instagramHandle: readField(source, 'InstagramHandle'),
+    facebookHandle: readField(source, 'FacebookHandle'),
   }
 }
 
@@ -195,10 +290,14 @@ async function resolveStorageUrl(path: string | null | undefined) {
 export function PortfolioProvider({ children }: { children: ReactNode }) {
   const [snapshot, setSnapshot] = useState<PortfolioSnapshot>(emptySnapshot)
   const [accountInfo, setAccountInfo] = useState<MasterAccountInfo | null>(null)
+  const [youtubeSocial, setYoutubeSocial] = useState<YoutubeSocial>(emptyYoutubeSocial)
+  const [liveStats, setLiveStats] = useState<YoutubeLiveStats | null>(null)
+  const [liveVideos, setLiveVideos] = useState<YoutubeLiveVideo[]>([])
   const [masterLogin, setMasterLogin] = useState<MasterLogin | null>(null)
   const [loginEmail, setLoginEmail] = useState('')
   const [isReady, setIsReady] = useState(false)
   const masterLoginRef = useRef<MasterLogin | null>(null)
+  const liveLoadId = useRef(0)
   masterLoginRef.current = masterLogin
 
   const fetchConfig = useCallback(async () => {
@@ -210,21 +309,23 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     await fetchAndActivate(remoteConfig)
     await ensureInitialized(remoteConfig)
     const nextLogin = parseMasterLogin(getValue(remoteConfig, 'master_login').asString())
-    const nextAccount = parseAccountInfo(getValue(remoteConfig, 'master_account_info').asString())
+    const nextSocial = parseYoutubeSocial(getValue(remoteConfig, 'youtube_social').asString())
     masterLoginRef.current = nextLogin
     setMasterLogin(nextLogin)
-    setAccountInfo(nextAccount)
+    setYoutubeSocial(nextSocial)
     return nextLogin
   }, [])
 
   const loadAll = useCallback(async () => {
     const { database } = getFirebase()
     const root = dbRef(database)
-    const [workingSnap, educationSnap, portfolioSnap] = await withTimeout(
+    const [workingSnap, educationSnap, portfolioSnap, youtubeSnap, contactSnap] = await withTimeout(
       Promise.all([
         get(child(root, 'WorkingExperience')),
         get(child(root, 'Education')),
         get(child(root, 'Portfolio')),
+        get(child(root, 'YoutubeChannel')),
+        get(child(root, 'Contact')),
       ]),
       20000,
       'Database timeout',
@@ -247,8 +348,25 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
         return { ...item, cover }
       }),
     )
-    setSnapshot({ portfolios: resolved, education, workingExperience })
+    const youtubeChannel = parseYoutubeChannel(youtubeSnap.val())
+    const contact = parseContact(contactSnap.val())
+    setSnapshot({
+      portfolios: resolved,
+      education,
+      workingExperience,
+      youtubeChannel,
+    })
+    setAccountInfo(contact)
+    setLiveStats(null)
+    setLiveVideos([])
     setIsReady(true)
+    const loadId = liveLoadId.current + 1
+    liveLoadId.current = loadId
+    void fetchYoutubeLive(youtubeChannel.handle, youtubeChannel.channelId).then((live) => {
+      if (liveLoadId.current !== loadId) return
+      setLiveStats(live?.stats ?? null)
+      setLiveVideos(live?.videos ?? [])
+    })
   }, [])
 
   const login = useCallback(
@@ -266,6 +384,10 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
       await signOut(getFirebase().auth)
     }
     setSnapshot(emptySnapshot)
+    setAccountInfo(null)
+    setLiveStats(null)
+    setLiveVideos([])
+    liveLoadId.current += 1
     setLoginEmail('')
     setIsReady(false)
   }, [])
@@ -308,6 +430,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     () => ({
       snapshot,
       accountInfo,
+      youtubeSocial,
+      liveStats,
+      liveVideos,
       loginEmail,
       isReady,
       fetchConfig,
@@ -321,6 +446,9 @@ export function PortfolioProvider({ children }: { children: ReactNode }) {
     [
       snapshot,
       accountInfo,
+      youtubeSocial,
+      liveStats,
+      liveVideos,
       loginEmail,
       isReady,
       fetchConfig,

@@ -71,16 +71,72 @@ export function Badge({ children }: { children: ReactNode }) {
   return <p className="mx-auto w-fit rounded-full bg-[#eceae6] px-4 py-1 text-sm text-nav">{children}</p>
 }
 
-export function Tag({ children }: { children: ReactNode }) {
-  return <span className="rounded-full bg-white px-4 py-2 text-sm text-nav shadow-sm">{children}</span>
+export function Tag({
+  children,
+  className,
+  selected,
+}: {
+  children: ReactNode
+  className?: string
+  selected?: boolean
+}) {
+  return (
+    <span
+      className={cx(
+        'rounded-full px-4 py-2 text-sm shadow-sm',
+        selected ? 'bg-gold-soft text-gold' : 'bg-white text-nav',
+        className,
+      )}
+    >
+      {children}
+    </span>
+  )
 }
 
-export function TagList({ tags }: { tags: string[] }) {
+function tagClass(variant: 'pill' | 'pillar' | 'price', selected: boolean) {
+  if (variant === 'pillar') return 'tag-pillar'
+  if (variant === 'price') return cx('tag-price', selected && 'is-selected')
+  return cx('rounded-full px-4 py-2 text-sm shadow-sm', selected ? 'bg-gold-soft text-gold' : 'bg-white text-nav')
+}
+
+export function TagList({
+  tags,
+  prefix = '#',
+  selected,
+  onSelect,
+  variant = 'pill',
+}: {
+  tags: string[]
+  prefix?: string
+  selected?: string | null
+  onSelect?: (tag: string | null) => void
+  variant?: 'pill' | 'pillar' | 'price'
+}) {
   return (
-    <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-      {tags.map((tag) => (
-        <Tag key={tag}>#{tag}</Tag>
-      ))}
+    <div
+      className={cx(
+        'flex flex-wrap justify-center md:justify-start',
+        variant === 'price' ? 'gap-x-3 gap-y-2' : 'gap-2',
+      )}
+    >
+      {tags.map((tag) =>
+        onSelect ? (
+          <button
+            key={tag}
+            type="button"
+            className={tagClass(variant, selected === tag)}
+            onClick={() => onSelect(selected === tag ? null : tag)}
+          >
+            {prefix}
+            {tag}
+          </button>
+        ) : (
+          <span key={tag} className={tagClass(variant, false)}>
+            {prefix}
+            {tag}
+          </span>
+        ),
+      )}
     </div>
   )
 }
@@ -208,10 +264,15 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
   return <select {...props} className={cx('rounded-xl border border-ink/15 bg-transparent px-3 py-2', props.className)} />
 }
 
+export function ContactIcon({ src, className }: { src?: string; className?: string }) {
+  if (!src) return null
+  return <img src={src} alt="" className={cx('h-5 w-5 shrink-0 object-contain', className)} />
+}
+
 export function SettingsRow({ icon, label, value, href, onClick }: ContactItem) {
   const body = (
     <>
-      <img src={icon} alt="" className="h-6 w-6 opacity-70" />
+      <ContactIcon src={icon} className="h-6 w-6" />
       {value ? (
         <span className="min-w-0 flex-1">
           <span className="block text-xs text-nav">{label}</span>
@@ -237,11 +298,24 @@ export function SettingsRow({ icon, label, value, href, onClick }: ContactItem) 
   )
 }
 
-export function ContactLine({ label, value, href }: { label: string; value?: string; href?: string }) {
+export function ContactLine({
+  icon,
+  label,
+  value,
+  href,
+}: {
+  icon?: string
+  label: string
+  value?: string
+  href?: string
+}) {
   if (!value) return null
   const body = (
     <>
-      <p className="text-xs text-nav">{label}</p>
+      <p className="flex items-center justify-center gap-2 text-xs text-nav">
+        <ContactIcon src={icon} />
+        {label}
+      </p>
       <p className="mt-1 break-all font-heading text-gold">{value}</p>
     </>
   )
@@ -277,7 +351,13 @@ export function ContactGroup({
       <div className={variant === 'line' ? 'mt-6 space-y-3' : 'mt-4'}>
         {items.map((item) =>
           variant === 'line' ? (
-            <ContactLine key={item.label + (item.value ?? '')} label={item.label} value={item.value} href={item.href} />
+            <ContactLine
+              key={item.label + (item.value ?? '')}
+              icon={item.icon}
+              label={item.label}
+              value={item.value}
+              href={item.href}
+            />
           ) : (
             <SettingsRow key={item.label + (item.value ?? '')} {...item} />
           ),

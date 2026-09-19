@@ -17,3 +17,8 @@ export function waTo(phone: string) {
 export function webUrl(url: string) {
   return url.startsWith('http') ? url : `https://${url}`
 }
+
+/** Firebase Console string fields are single-line. Typed `\\n` becomes a line break. */
+export function decodeRtdbNewlines(value: string) {
+  return value.replace(/\r\n/g, '\n').replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n')
+}

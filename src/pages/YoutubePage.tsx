@@ -1,24 +1,34 @@
 import { useState } from 'react'
 import { ChannelCard, VideoPlayer } from '../components/sections'
 import { ContactGroup, MediaCard, MediaGrid, PageWrap, SectionHeading } from '../components/ui'
-import { youtuberContacts } from '../data/contacts'
+import { youtubeCollabContacts, youtuberSocialContacts } from '../data/contacts'
+import { usePortfolio } from '../data/PortfolioContext'
 import { strings } from '../data/strings'
-import { YoutubeChannelContent, youtubeThumb, type YoutubeVideo } from '../data/youtube'
+import { videosFor, youtubeThumb, type YoutubeVideo } from '../data/youtube'
 
 export function YoutubePage() {
+  const { snapshot, accountInfo, youtubeSocial, liveStats, liveVideos } = usePortfolio()
+  const channel = snapshot.youtubeChannel
   const [playing, setPlaying] = useState<YoutubeVideo | null>(null)
-  const videos = YoutubeChannelContent.videos
-  const social = youtuberContacts()
-  const collab = social.filter((item) => item.label === strings.labelEmail)
+  const [selectedTag, setSelectedTag] = useState<string | null>(null)
+  const videos = videosFor(channel, liveVideos, selectedTag)
+  const social = youtuberSocialContacts(channel, youtubeSocial)
+  const collab = youtubeCollabContacts(channel, accountInfo)
 
   return (
     <PageWrap>
       <SectionHeading
         eyebrow={strings.youtubeEyebrow}
-        title={strings.youtubeChannelName}
-        subtitle={strings.channelsSubtitle}
+        title={channel.channelName || strings.youtubeChannelName}
+        subtitle={channel.slogan || strings.channelsSubtitle}
       />
-      <ChannelCard />
+      <ChannelCard
+        channel={channel}
+        social={youtubeSocial}
+        liveStats={liveStats}
+        selectedTag={selectedTag}
+        onSelectTag={setSelectedTag}
+      />
 
       <h3 className="mb-6 text-center font-heading text-2xl font-bold">{strings.featuredVideos}</h3>
       {videos.length === 0 ? (
@@ -46,7 +56,7 @@ export function YoutubePage() {
       <ContactGroup
         className="mx-auto mt-6 max-w-2xl text-center"
         title={strings.youtubeSectionCollab}
-        subtitle={strings.youtubeCollabInvite}
+        subtitle={channel.collabInvite || strings.youtubeCollabInvite}
         items={collab}
         variant="row"
       />

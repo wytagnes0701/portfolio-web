@@ -41,7 +41,7 @@ export function getFirebase(): FirebaseClients {
   remoteConfig.settings.minimumFetchIntervalMillis = 0
   remoteConfig.defaultConfig = {
     master_login: '',
-    master_account_info: '',
+    youtube_social: '',
   }
   clients = {
     app,

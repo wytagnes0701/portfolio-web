@@ -32,7 +32,7 @@ export function AboutPage() {
 }
 
 export function ContactPage() {
-  const { accountInfo } = usePortfolio()
+  const { accountInfo, snapshot, youtubeSocial } = usePortfolio()
   const [picker, setPicker] = useState<string | null>(null)
   const [qr, setQr] = useState<string | null>(null)
 
@@ -59,7 +59,7 @@ export function ContactPage() {
         <ContactGroup
           title={strings.contactYoutuber}
           subtitle={strings.youtubeSocialInvite}
-          items={youtuberContacts()}
+          items={youtuberContacts(snapshot.youtubeChannel, youtubeSocial)}
           variant="row"
         />
       </div>
