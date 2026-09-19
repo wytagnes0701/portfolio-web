@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TechoDialog } from '../components/Dialogs'
-import { BackLink, LinkifiedLine, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
+import { BackLink, CoverPager, LinkifiedLine, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { SKILLS, skillsFromTagIndex } from '../data/skills'
 import { strings } from '../data/strings'
@@ -29,8 +29,6 @@ export function ProjectDetailPage() {
     )
   }
 
-  const cover = images[0] ?? project.cover
-
   return (
     <PageWrap>
       <BackLink onClick={() => navigate('/projects')}>← {strings.labelProject}</BackLink>
@@ -44,7 +42,7 @@ export function ProjectDetailPage() {
           {strings.info}
         </Pill>
       </div>
-      {cover ? <img src={publicUrl(cover)} alt="" className="site-card mt-8 aspect-video w-full object-cover" /> : null}
+      <CoverPager key={project.id} images={images} fallback={project.cover} />
       {project.description.length > 0 ? (
         <section className="mt-10">
           <h2 className="font-heading text-2xl font-bold">{strings.descriptionTitle}</h2>

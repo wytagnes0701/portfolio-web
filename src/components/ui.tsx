@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
+import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type PointerEvent, type ReactNode, type SelectHTMLAttributes } from 'react'
 import { Link } from 'react-router-dom'
 import type { ContactItem } from '../data/contacts'
 import { cx, publicUrl, splitHttpUrlParts } from '../lib/format'
@@ -413,6 +413,76 @@ export function MediaCard({
 
 export function MediaGrid({ children, tight }: { children: ReactNode; tight?: boolean }) {
   return <div className={cx('grid sm:grid-cols-2 lg:grid-cols-3', tight ? 'gap-5' : 'gap-6')}>{children}</div>
+}
+
+export function CoverPager({ images, fallback }: { images: string[]; fallback?: string | null }) {
+  const urls = useMemo(() => {
+    const resolved = images.filter(Boolean)
+    return resolved.length > 0 ? resolved : fallback ? [fallback] : []
+  }, [images, fallback])
+  const [page, setPage] = useState(0)
+  const dragStartX = useRef<number | null>(null)
+  const currentPage = urls.length === 0 ? 0 : page % urls.length
+
+  useEffect(() => {
+    if (urls.length <= 1) return
+    const timer = window.setInterval(() => {
+      setPage((current) => (current + 1) % urls.length)
+    }, 2000)
+    return () => window.clearInterval(timer)
+  }, [urls.length, currentPage])
+
+  if (urls.length === 0) return null
+
+  const goBy = (delta: number) => {
+    setPage((current) => (current + delta + urls.length) % urls.length)
+  }
+
+  const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (urls.length <= 1) return
+    dragStartX.current = event.clientX
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const onPointerUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (dragStartX.current == null || urls.length <= 1) return
+    const delta = event.clientX - dragStartX.current
+    dragStartX.current = null
+    if (Math.abs(delta) < 40) return
+    goBy(delta < 0 ? 1 : -1)
+  }
+
+  return (
+    <div
+      className="site-card mt-8 overflow-hidden"
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerCancel={() => {
+        dragStartX.current = null
+      }}
+    >
+      <div className="relative aspect-video w-full overflow-hidden">
+        <div
+          className="flex h-full transition-transform duration-500 ease-out"
+          style={{
+            width: `${urls.length * 100}%`,
+            transform: `translateX(-${currentPage * (100 / urls.length)}%)`,
+          }}
+        >
+          {urls.map((src) => (
+            <img
+              key={src}
+              src={publicUrl(src)}
+              alt=""
+              draggable={false}
+              className="h-full object-cover"
+              style={{ width: `${100 / urls.length}%` }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export function Thumbnail({ src, onClick }: { src: string; onClick: () => void }) {
