@@ -42,6 +42,26 @@ npm run lint     # oxlint
 
 ---
 
+## GitHub Pages
+
+GitHub Actions **does not host an interactive `npm run dev` server**. The workflow builds the static site and deploys it to **GitHub Pages**, which you can open in a browser.
+
+Live URL after a successful deploy: https://wytagnes0701.github.io/portfolio-web/
+
+### Try it
+
+1. Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Push to `main`, or open **Actions → Build and deploy Pages → Run workflow**.
+3. When the **deploy** job is green, open the Pages URL above (also shown on the workflow run).
+4. Firebase Console → **Authentication → Settings → Authorized domains** → add `wytagnes0701.github.io`.
+5. Restrict `VITE_YOUTUBE_API_KEY` HTTP referrers to include `https://wytagnes0701.github.io/*`.
+
+Workflow: [`.github/workflows/pages.yml`](.github/workflows/pages.yml). Build-time `VITE_*` values come from **Settings → Secrets and variables → Actions**. `VITE_*` is baked into the public JS bundle (same as a local production build).
+
+SPA routes (`/home`, `/youtube`, …) work because the workflow copies `index.html` to `404.html` for GitHub Pages.
+
+---
+
 ## Firebase
 
 Create a **Web** app in Firebase Console for project `agnes-profile` and put the config in `.env.local`:
@@ -56,7 +76,7 @@ Create a **Web** app in Firebase Console for project `agnes-profile` and put the
 - `VITE_AES_KEY` — same value as the Android AES key
 - `VITE_YOUTUBE_API_KEY` — optional YouTube Data API key (HTTP-referrer restricted). Blank skips live overlay
 
-Also add `localhost` under **Authentication → Settings → Authorized domains**.
+Also add `localhost` and, for GitHub Pages, `wytagnes0701.github.io` under **Authentication → Settings → Authorized domains**.
 
 ### What the site reads
 
@@ -228,6 +248,7 @@ Product and UI decisions since the site was scaffolded:
 13. **Pillars vs 熱門標籤** — two tag UIs: rounded-rect techo-blue pillars vs price-tag 熱門標籤 (pink / coral when selected).
 14. **Contact icons** — every contact method is `icon + label`; social/WhatsApp/Web SVGs retinted to ink.
 15. **Latest videos CTA** — Home `#videos` under the grid is **更多** → `/youtube`. **前往頻道** remains only on the channel card.
+16. **GitHub Pages** — Actions builds with repo secrets and deploys to `https://wytagnes0701.github.io/portfolio-web/`.
 
 ---
 

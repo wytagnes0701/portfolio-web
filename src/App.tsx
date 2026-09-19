@@ -12,10 +12,12 @@ import { ProjectsPage } from './pages/ProjectsPage'
 import { SplashPage } from './pages/SplashPage'
 import { YoutubePage } from './pages/YoutubePage'
 
+const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || undefined
+
 export default function App() {
   return (
     <PortfolioProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={routerBasename}>
         <ScrollOnRouteChange />
         <Routes>
           <Route path="/" element={<SplashPage />} />
