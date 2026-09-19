@@ -24,15 +24,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - uses: actions/configure-pages@v5
-        id: pages
       - name: Install
         run: npm ci
       - name: Lint
         run: npm run lint
       - name: Build
         env:
-          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          VITE_BASE_PATH: /portfolio-web
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
           VITE_FIREBASE_DATABASE_URL: ${{ secrets.VITE_FIREBASE_DATABASE_URL }}
@@ -45,8 +43,13 @@ jobs:
         run: npm run build
       - name: SPA fallback for GitHub Pages
         run: cp dist/index.html dist/404.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: site
+          path: dist
       - uses: actions/upload-pages-artifact@v3
         if: github.event_name != 'pull_request'
+        continue-on-error: true
         with:
           path: dist
 
@@ -54,6 +57,7 @@ jobs:
     needs: build
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

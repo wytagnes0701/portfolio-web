@@ -44,21 +44,31 @@ npm run lint     # oxlint
 
 ## GitHub Pages
 
-GitHub Actions **does not host an interactive `npm run dev` server**. The workflow builds the static site and deploys it to **GitHub Pages**, which you can open in a browser.
+GitHub Actions **does not host an interactive `npm run dev` server**. It builds the static site. A live URL needs **GitHub Pages**.
 
-Live URL after a successful deploy: https://wytagnes0701.github.io/portfolio-web/
+Intended URL: https://wytagnes0701.github.io/portfolio-web/
 
-### Try it
+This repo is **private**. Free GitHub accounts cannot use Pages on private repos, so deploy will stay unavailable until you either:
 
-1. Repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-2. Push to `main`, or open **Actions → Build and deploy Pages → Run workflow**.
-3. When the **deploy** job is green, open the Pages URL above (also shown on the workflow run).
-4. Firebase Console → **Authentication → Settings → Authorized domains** → add `wytagnes0701.github.io`.
-5. Restrict `VITE_YOUTUBE_API_KEY` HTTP referrers to include `https://wytagnes0701.github.io/*`.
+- **Settings → General → Danger Zone → Change repository visibility → Public**, then re-run the workflow, or
+- upgrade to GitHub Pro.
+
+### Try the build on GitHub (works on a private repo)
+
+1. Open **Actions → Build and deploy Pages** (https://github.com/wytagnes0701/portfolio-web/actions).
+2. Open the latest run. When **build** is green, download the **site** artifact (zip of `dist`) and unzip, then `npx vite preview` is not needed — you can also run locally with `npm run preview` after `npm run build`.
+3. Optional: **Run workflow** (workflow_dispatch) to rebuild without a new commit.
+
+### After Pages is enabled (public repo or Pro)
+
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Re-run the workflow. Open the Pages URL from the deploy job.
+3. Firebase Console → **Authentication → Settings → Authorized domains** → add `wytagnes0701.github.io`.
+4. Restrict `VITE_YOUTUBE_API_KEY` HTTP referrers to include `https://wytagnes0701.github.io/*`.
 
 Workflow: [`.github/workflows/pages.yml`](.github/workflows/pages.yml). Build-time `VITE_*` values come from **Settings → Secrets and variables → Actions**. `VITE_*` is baked into the public JS bundle (same as a local production build).
 
-SPA routes (`/home`, `/youtube`, …) work because the workflow copies `index.html` to `404.html` for GitHub Pages.
+SPA routes (`/home`, `/youtube`, …) work on Pages because the workflow copies `index.html` to `404.html`.
 
 ---
 
