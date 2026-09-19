@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { strings } from '../data/strings'
+import { publicUrl } from '../lib/format'
 
 const links = [
   { to: '/home#about', label: strings.labelAbout },
@@ -24,7 +25,7 @@ export function SiteHeader() {
           onClick={() => navigate('/home')}
           className="flex shrink-0 items-center gap-2.5"
         >
-          <img src="/images/about_me.jpg" alt="" className="h-8 w-8 rounded-full object-cover" />
+          <img src={publicUrl('/images/about_me.jpg')} alt="" className="h-8 w-8 rounded-full object-cover" />
           <span className="font-heading text-lg font-medium">{strings.brandName}</span>
         </button>
         <nav className="hidden items-center gap-x-5 lg:flex">

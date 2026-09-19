@@ -2,6 +2,13 @@ export function cx(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(' ')
 }
 
+/** `public/` files. Vite `base` is `/` locally and `/portfolio-web/` on GitHub Pages. */
+export function publicUrl(path: string) {
+  if (!path || /^(https?:|data:|blob:)/i.test(path)) return path
+  const base = import.meta.env.BASE_URL || '/'
+  return `${base}${path.replace(/^\/+/, '')}`
+}
+
 export function mailTo(email: string, subject?: string, body?: string) {
   const params = new URLSearchParams()
   if (subject) params.set('subject', subject)

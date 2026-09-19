@@ -5,6 +5,7 @@ import { BackLink, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '..
 import { usePortfolio } from '../data/PortfolioContext'
 import { SKILLS, skillsFromTagIndex } from '../data/skills'
 import { strings } from '../data/strings'
+import { publicUrl } from '../lib/format'
 
 export function ProjectDetailPage() {
   const { itemId } = useParams()
@@ -43,7 +44,7 @@ export function ProjectDetailPage() {
           {strings.info}
         </Pill>
       </div>
-      {cover ? <img src={cover} alt="" className="site-card mt-8 aspect-video w-full object-cover" /> : null}
+      {cover ? <img src={publicUrl(cover)} alt="" className="site-card mt-8 aspect-video w-full object-cover" /> : null}
       {project.description.length > 0 ? (
         <section className="mt-10">
           <h2 className="font-heading text-2xl font-bold">{strings.descriptionTitle}</h2>
@@ -116,7 +117,7 @@ export function GalleryPage() {
       </div>
       {active ? (
         <TechoDialog title={strings.gallery} confirmLabel={strings.cancel} onConfirm={() => setActive(null)}>
-          <img src={active} alt="" className="aspect-video w-full object-contain" />
+          <img src={publicUrl(active)} alt="" className="aspect-video w-full object-contain" />
         </TechoDialog>
       ) : null}
     </PageWrap>

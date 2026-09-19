@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, InputHTMLAttributes, ReactNode, SelectHTMLAttributes } from 'react'
 import { Link } from 'react-router-dom'
 import type { ContactItem } from '../data/contacts'
-import { cx } from '../lib/format'
+import { cx, publicUrl } from '../lib/format'
 
 function externalProps(href: string) {
   return href.startsWith('http') ? { target: '_blank' as const, rel: 'noreferrer' } : {}
@@ -212,7 +212,7 @@ export function Polaroid({ src, caption, large }: { src: string; caption?: strin
   return (
     <div className="text-center">
       <div className="mx-auto w-fit rotate-[-2deg] bg-white p-3 shadow-md">
-        <img src={src} alt="" className={large ? 'h-52 w-52 object-cover' : 'h-44 w-44 object-cover'} />
+        <img src={publicUrl(src)} alt="" className={large ? 'h-52 w-52 object-cover' : 'h-44 w-44 object-cover'} />
       </div>
       {caption ? <p className="eyebrow mt-3">{caption}</p> : null}
     </div>
@@ -266,7 +266,7 @@ export function Select(props: SelectHTMLAttributes<HTMLSelectElement>) {
 
 export function ContactIcon({ src, className }: { src?: string; className?: string }) {
   if (!src) return null
-  return <img src={src} alt="" className={cx('h-5 w-5 shrink-0 object-contain', className)} />
+  return <img src={publicUrl(src)} alt="" className={cx('h-5 w-5 shrink-0 object-contain', className)} />
 }
 
 export function SettingsRow({ icon, label, value, href, onClick }: ContactItem) {
@@ -370,7 +370,7 @@ export function ContactGroup({
 export function EmptyState({ label }: { label: string }) {
   return (
     <div className="flex flex-col items-center py-16">
-      <img src="/images/empty_state.png" alt="" className="h-40 w-40 object-contain" />
+      <img src={publicUrl('/images/empty_state.png')} alt="" className="h-40 w-40 object-contain" />
       <p className="mt-4 text-xl">{label}</p>
     </div>
   )
@@ -398,7 +398,7 @@ export function MediaCard({
   return (
     <button type="button" onClick={onClick} className="group relative overflow-hidden rounded-2xl text-left">
       <img
-        src={imageUrl || '/images/empty_state.png'}
+        src={publicUrl(imageUrl || '/images/empty_state.png')}
         alt=""
         className="aspect-video w-full object-cover transition duration-300 group-hover:scale-[1.03]"
       />
@@ -418,13 +418,13 @@ export function MediaGrid({ children, tight }: { children: ReactNode; tight?: bo
 export function Thumbnail({ src, onClick }: { src: string; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="site-card aspect-square overflow-hidden">
-      <img src={src} alt="" className="h-full w-full object-cover" />
+      <img src={publicUrl(src)} alt="" className="h-full w-full object-cover" />
     </button>
   )
 }
 
 export function SkillIcon({ src, label }: { src: string; label?: string }) {
-  return <img src={src} alt={label ?? ''} className="h-6 w-6 shrink-0 object-contain" />
+  return <img src={publicUrl(src)} alt={label ?? ''} className="h-6 w-6 shrink-0 object-contain" />
 }
 
 export function SectionHeading({

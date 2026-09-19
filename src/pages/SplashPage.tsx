@@ -5,6 +5,7 @@ import { LoadingOverlay, TechoDialog } from '../components/Dialogs'
 import { usePortfolio } from '../data/PortfolioContext'
 import { getFirebase, isFirebaseConfigured } from '../data/firebase'
 import { strings } from '../data/strings'
+import { publicUrl } from '../lib/format'
 
 export function SplashPage() {
   const navigate = useNavigate()
@@ -42,7 +43,7 @@ export function SplashPage() {
     <div className="desk-bg flex min-h-dvh items-center justify-center">
       <div className="flex flex-col items-center">
         <img
-          src="/favicon.png"
+          src={publicUrl('/favicon.png')}
           alt=""
           className="h-40 w-40 rounded-2xl bg-white object-contain p-4"
         />

@@ -70,6 +70,8 @@ Workflow: [`.github/workflows/pages.yml`](.github/workflows/pages.yml). Build-ti
 
 SPA routes (`/home`, `/youtube`, …) work on Pages because the workflow copies `index.html` to `404.html`.
 
+`public/` files (`/icons/…`, `/images/…`) are resolved with `import.meta.env.BASE_URL`, so they load under `/portfolio-web/` instead of the github.io site root.
+
 ---
 
 ## Firebase

@@ -13,6 +13,7 @@ import {
   videoCountDisplay,
   viewCountDisplay,
 } from '../data/youtube'
+import { publicUrl } from '../lib/format'
 import {
   Card,
   Overlay,
@@ -110,7 +111,7 @@ export function ChannelCard({
     <Card className="mb-12 p-8">
       <div className="flex flex-col items-center gap-4 text-center md:flex-row md:text-left">
         <img
-          src="/images/youtube_icon.png"
+          src={publicUrl('/images/youtube_icon.png')}
           alt={channel.creatorName || strings.youtubeCreatorName}
           className="h-16 w-16 rounded-full bg-white object-cover"
         />
