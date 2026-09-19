@@ -134,7 +134,11 @@ Hero is a notebook spread: name, tagline, CTAs (work / experience / education / 
 ### Portfolio
 
 - `/projects` — overlay cards, filter by year (**2013–2023**) and project type, removable filter chips, empty state. List order is the RTDB `Portfolio` array (`0` SoePay, `1` PayServer, `2` AURALBOOK, …).
-- `/project/:itemId` — description, further info, skill icons, embedded YouTube, gallery + icon-list dialogs. `http://` / `https://` lines (Play Store, project sites) are gold underlined links that open in a new tab.
+- `/project/:itemId` — Wix-style case study (desktop two-column, mobile stack). Layout depends on whether `VidURL` has videos:
+  - **Still projects** (e.g. AURALBOOK `/project/2`) — `CoverPager` slideshow on the left (cover + gallery, 2s auto-advance, swipe). Copy on the right: title, `Date` / `Position involved` / `Keywords` on separate lines, description bullets, skill icons, further-info links, compact **BACK**.
+  - **Video projects** (e.g. MongKok `/project/30`) — one 600px YouTube player left; title + spaced paragraphs right; compact **BACK** under the copy (not full-width).
+  - **Several videos** (e.g. Short 3D Animation Collection `/project/32`) — only the **first** player sits beside the copy. Further videos stack **under that first player**, not under **BACK**. On a narrow screen: first player, copy, remaining players, then **BACK**.
+  - **Gallery** and **Info** are ink icons at the **top** of the page on every breakpoint (same Android glyphs: `icon_gallery.svg`, `icon_info.svg`). `http://` / `https://` lines are gold underlined links that open in a new tab.
 - `/gallery/:itemId` — thumbnail grid; tap to enlarge.
 
 Working experience is sorted **newest first**, including roles inside the same company (`src/data/experience.ts`). Category labels come from `EXPERIENCE_TABS` (`fintech`, `music education`, `event`, `media`).
@@ -194,7 +198,7 @@ Website look: cream desk, notebook hero, gold pills, overlay media cards. Typogr
 
 Pages compose shared pieces instead of one-off markup.
 
-**Primitives** (`src/components/ui.tsx`): `Card`, `Pill`, `Badge`, `Field`, `Select`, `Tabs`, `Stat` / `StatRow`, `Tag` / `TagList` (`pillar` rounded rect vs `price` hang-tag), `ContactIcon`, `Polaroid`, `MediaCard` / `MediaGrid`, `ContactGroup`, `TimelineCard`, `Overlay`, `SkillIcon`, and related layout helpers.
+**Primitives** (`src/components/ui.tsx`): `Card`, `Pill`, `Badge`, `Field`, `Select`, `Tabs`, `Stat` / `StatRow`, `Tag` / `TagList` (`pillar` rounded rect vs `price` hang-tag), `ContactIcon`, `Polaroid`, `MediaCard` / `MediaGrid`, `CoverPager` (16:9 cover slideshow), `YoutubeEmbed`, `ContactGroup`, `TimelineCard`, `Overlay`, `SkillIcon`, and related layout helpers.
 
 Price-tag and pillar styles live in `src/index.css` (`.tag-price`, `.tag-pillar`).
 
@@ -262,6 +266,8 @@ Product and UI decisions since the site was scaffolded:
 15. **Latest videos CTA** — Home `#videos` under the grid is **更多** → `/youtube`. **前往頻道** remains only on the channel card.
 16. **GitHub Pages** — Actions builds with repo secrets and deploys to `https://wytagnes0701.github.io/portfolio-web/`.
 17. **Match Android 1.04** — RTDB list order and `ID` = index; Wix original covers/gallery in `public/images/portfolio/` (no Storage); year chips **2013–2023**; tappable `http(s)` URLs on project detail.
+18. **Project cover slideshow** — detail pages use Android-style `CoverPager`: cover + extra stills, 2s auto-advance, swipe when there is more than one image.
+19. **Wix project layout** — desktop: media left, copy right (Wix AURALBOOK / MongKok / 3D collection). Mobile: first media, then copy. Video pages sit in a ~980px well (600px player + 340px copy); still pages keep the wider grid. Several YouTube IDs: first embed next to the copy, the rest under that embed (not under **BACK**). **BACK** stays compact (`w-fit`), not full-bleed. Gallery and Info are top-right icons on all breakpoints.
 
 ---
 

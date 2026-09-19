@@ -24,6 +24,7 @@ export const strings = {
   confirm: 'Confirm',
   gallery: 'Gallery',
   info: 'Info',
+  labelBack: 'BACK',
   labelPortfolio: 'Portfolio',
   labelYoutube: 'YouTube',
   labelMore: 'More',

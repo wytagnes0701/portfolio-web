@@ -1,11 +1,22 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TechoDialog } from '../components/Dialogs'
-import { BackLink, CoverPager, LinkifiedLine, PageWrap, Pill, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
+import { BackLink, CoverPager, LinkifiedLine, PageWrap, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { SKILLS, skillsFromTagIndex } from '../data/skills'
 import { strings } from '../data/strings'
 import { publicUrl } from '../lib/format'
+
+function displayBasicInfo(text: string) {
+  return text.replace(/\s+(?=(Date:|Position involved:|Keywords:))/g, '\n').trim()
+}
+
+function splitParagraphs(text: string) {
+  return text
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+}
 
 export function ProjectDetailPage() {
   const { itemId } = useParams()
@@ -15,6 +26,7 @@ export function ProjectDetailPage() {
   const [images, setImages] = useState<string[]>([])
   const [showIcons, setShowIcons] = useState(false)
   const skills = useMemo(() => skillsFromTagIndex(project?.tagIndex ?? []), [project])
+  const videos = useMemo(() => project?.vidURL.filter(Boolean) ?? [], [project])
 
   useEffect(() => {
     if (!project) return
@@ -29,51 +41,131 @@ export function ProjectDetailPage() {
     )
   }
 
-  return (
-    <PageWrap>
-      <BackLink onClick={() => navigate('/projects')}>← {strings.labelProject}</BackLink>
-      <h1 className="font-heading text-4xl font-bold md:text-5xl">{project.title}</h1>
-      <p className="mt-3 max-w-3xl text-ink/70">{project.basicInfo}</p>
-      <div className="mt-4 flex gap-2">
-        <Pill variant="white" onClick={() => navigate(`/gallery/${project.id}`)}>
-          {strings.gallery}
-        </Pill>
-        <Pill variant="white" onClick={() => setShowIcons(true)}>
-          {strings.info}
-        </Pill>
+  const descriptionText = project.description.join('\n').trim()
+  const showDescription = descriptionText.length > 0 && descriptionText !== project.basicInfo.trim()
+  const videoParagraphs = [
+    ...splitParagraphs(project.basicInfo),
+    ...(showDescription ? project.description.map((line) => line.trim()).filter(Boolean) : []),
+  ]
+
+  const backButton = (className: string) => (
+    <button
+      type="button"
+      onClick={() => navigate('/projects')}
+      className={className}
+    >
+      {strings.labelBack}
+    </button>
+  )
+
+  const skillsRow =
+    skills.length > 0 ? (
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        {skills.map((skill) => (
+          <SkillIcon key={skill.key} src={skill.icon} label={skill.label} />
+        ))}
       </div>
-      <CoverPager key={project.id} images={images} fallback={project.cover} />
-      {project.description.length > 0 ? (
-        <section className="mt-10">
-          <h2 className="font-heading text-2xl font-bold">{strings.descriptionTitle}</h2>
-          <ul className="mt-3 space-y-1 text-ink/80">
+    ) : null
+
+  const furtherInfo =
+    project.furtherInfo.length > 0 ? (
+      <section className="mt-8">
+        <h2 className="text-sm font-medium text-ink">{strings.furtherInfoTitle}</h2>
+        <ul className="mt-2 space-y-1 text-sm leading-relaxed text-ink/80">
+          {project.furtherInfo.map((line) => (
+            <LinkifiedLine key={line} text={line} />
+          ))}
+        </ul>
+      </section>
+    ) : null
+
+  const copy = videos.length > 0 ? (
+    <div>
+      <h1 className="font-heading text-[22px] font-bold leading-snug">{project.title}</h1>
+      {videoParagraphs.length > 0 ? (
+        <div className="mt-4 space-y-3">
+          {videoParagraphs.map((line) => (
+            <p key={line} className="text-sm leading-relaxed text-nav">
+              {line}
+            </p>
+          ))}
+        </div>
+      ) : null}
+      {skillsRow}
+      {furtherInfo}
+      {backButton('mt-8 hidden w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white lg:inline-flex')}
+    </div>
+  ) : (
+    <div>
+      <h1 className="font-heading text-[22px] font-bold leading-snug">{project.title}</h1>
+      {project.basicInfo ? (
+        <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-nav">{displayBasicInfo(project.basicInfo)}</p>
+      ) : null}
+      {showDescription ? (
+        <section className="mt-8">
+          <h2 className="text-sm font-medium text-ink">{strings.descriptionTitle}</h2>
+          <ul className="mt-2 space-y-1 text-sm leading-relaxed text-ink/80">
             {project.description.map((line) => (
               <LinkifiedLine key={line} text={line} />
             ))}
           </ul>
         </section>
       ) : null}
-      {skills.length > 0 ? (
-        <div className="mt-6 flex flex-wrap items-center gap-2">
-          {skills.map((skill) => (
-            <SkillIcon key={skill.key} src={skill.icon} label={skill.label} />
-          ))}
-        </div>
-      ) : null}
-      {project.furtherInfo.length > 0 ? (
-        <section className="mt-10">
-          <h2 className="font-heading text-2xl font-bold">{strings.furtherInfoTitle}</h2>
-          <ul className="mt-3 space-y-1 text-ink/80">
-            {project.furtherInfo.map((line) => (
-              <LinkifiedLine key={line} text={line} />
-            ))}
-          </ul>
-        </section>
-      ) : null}
-      <div className="mt-8 space-y-4">
-        {project.vidURL.filter(Boolean).map((id) => (
-          <YoutubeEmbed key={id} videoId={id} />
+      {skillsRow}
+      {furtherInfo}
+      {backButton('mt-8 inline-flex w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white')}
+    </div>
+  )
+
+  const leadVideo = videos[0]
+  const moreVideos = videos.slice(1)
+  const media =
+    leadVideo != null ? (
+      <YoutubeEmbed videoId={leadVideo} className="rounded-sm" />
+    ) : (
+      <CoverPager key={project.id} images={images} fallback={project.cover} />
+    )
+  const restVideos =
+    moreVideos.length > 0 ? (
+      <div className="space-y-6">
+        {moreVideos.map((id) => (
+          <YoutubeEmbed key={id} videoId={id} className="rounded-sm" />
         ))}
+      </div>
+    ) : null
+
+  return (
+    <PageWrap className="py-6 lg:py-12">
+      <div className={videos.length > 0 ? 'mx-auto max-w-[980px]' : undefined}>
+        <div className="mb-4 flex justify-end gap-1">
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center"
+            aria-label={strings.gallery}
+            onClick={() => navigate(`/gallery/${project.id}`)}
+          >
+            <img src={publicUrl('/icons/icon_gallery.svg')} alt="" className="h-6 w-6 brightness-0" />
+          </button>
+          <button
+            type="button"
+            className="flex h-10 w-10 items-center justify-center"
+            aria-label={strings.info}
+            onClick={() => setShowIcons(true)}
+          >
+            <img src={publicUrl('/icons/icon_info.svg')} alt="" className="h-6 w-6 brightness-0" />
+          </button>
+        </div>
+        <ProjectSplit
+          hasVideo={videos.length > 0}
+          media={media}
+          copy={copy}
+          rest={restVideos}
+          mobileBack={
+            videos.length > 0
+              ? backButton('mt-2 inline-flex w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white lg:hidden')
+              : null
+          }
+        />
       </div>
       {showIcons ? (
         <TechoDialog title={strings.iconList} confirmLabel={strings.cancel} onConfirm={() => setShowIcons(false)}>
@@ -88,6 +180,35 @@ export function ProjectDetailPage() {
         </TechoDialog>
       ) : null}
     </PageWrap>
+  )
+}
+
+function ProjectSplit({
+  hasVideo,
+  media,
+  copy,
+  rest,
+  mobileBack,
+}: {
+  hasVideo: boolean
+  media: ReactNode
+  copy: ReactNode
+  rest?: ReactNode
+  mobileBack?: ReactNode
+}) {
+  return (
+    <div
+      className={
+        hasVideo
+          ? 'grid items-start gap-6 lg:grid-cols-[minmax(0,600px)_minmax(16rem,340px)] lg:gap-x-8 lg:gap-y-6'
+          : 'grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(20rem,24rem)] lg:gap-12'
+      }
+    >
+      <div>{media}</div>
+      <div>{copy}</div>
+      {rest ? <div className="lg:col-start-1">{rest}</div> : null}
+      {mobileBack ? <div>{mobileBack}</div> : null}
+    </div>
   )
 }
 

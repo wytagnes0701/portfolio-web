@@ -223,9 +223,17 @@ export function Overlay({ children }: { children: ReactNode }) {
   return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">{children}</div>
 }
 
-export function BackLink({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+export function BackLink({
+  onClick,
+  children,
+  className,
+}: {
+  onClick: () => void
+  children: ReactNode
+  className?: string
+}) {
   return (
-    <button type="button" onClick={onClick} className="mb-6 text-sm text-nav">
+    <button type="button" onClick={onClick} className={cx('mb-6 text-sm text-nav', className)}>
       {children}
     </button>
   )
@@ -415,7 +423,15 @@ export function MediaGrid({ children, tight }: { children: ReactNode; tight?: bo
   return <div className={cx('grid sm:grid-cols-2 lg:grid-cols-3', tight ? 'gap-5' : 'gap-6')}>{children}</div>
 }
 
-export function CoverPager({ images, fallback }: { images: string[]; fallback?: string | null }) {
+export function CoverPager({
+  images,
+  fallback,
+  className,
+}: {
+  images: string[]
+  fallback?: string | null
+  className?: string
+}) {
   const urls = useMemo(() => {
     const resolved = images.filter(Boolean)
     return resolved.length > 0 ? resolved : fallback ? [fallback] : []
@@ -454,7 +470,7 @@ export function CoverPager({ images, fallback }: { images: string[]; fallback?: 
 
   return (
     <div
-      className="site-card mt-8 overflow-hidden"
+      className={cx('site-card overflow-hidden', className)}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerCancel={() => {
@@ -568,12 +584,24 @@ export function CenterAction({ children }: { children: ReactNode }) {
   return <div className="mt-8 text-center">{children}</div>
 }
 
-export function YoutubeEmbed({ videoId }: { videoId: string }) {
+function youtubeId(value: string) {
+  const trimmed = value.trim()
+  const fromQuery = trimmed.match(/[?&]v=([\w-]{6,})/)
+  if (fromQuery) return fromQuery[1]
+  const fromShort = trimmed.match(/youtu\.be\/([\w-]{6,})/)
+  if (fromShort) return fromShort[1]
+  const fromEmbed = trimmed.match(/embed\/([\w-]{6,})/)
+  if (fromEmbed) return fromEmbed[1]
+  return trimmed
+}
+
+export function YoutubeEmbed({ videoId, className }: { videoId: string; className?: string }) {
+  const id = youtubeId(videoId)
   return (
     <iframe
-      title={videoId}
-      className="aspect-video w-full rounded-2xl"
-      src={`https://www.youtube.com/embed/${videoId}`}
+      title={id}
+      className={cx('aspect-video w-full bg-ink', className ?? 'rounded-2xl')}
+      src={`https://www.youtube.com/embed/${id}`}
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowFullScreen
     />
