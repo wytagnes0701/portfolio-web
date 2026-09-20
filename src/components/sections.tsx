@@ -16,12 +16,15 @@ import {
 import { publicUrl } from '../lib/format'
 import {
   Card,
+  Copy,
+  Heading,
   Overlay,
   Pill,
   Polaroid,
   StatRow,
   TagList,
   Tabs,
+  TextButton,
   TimelineCard,
   YoutubeEmbed,
 } from './ui'
@@ -44,10 +47,11 @@ export function Notebook({ children }: { children: ReactNode }) {
 export function AboutCard({ compact }: { compact?: boolean }) {
   return (
     <Card
+      pad={compact ? undefined : 'xl'}
       className={
         compact
           ? 'mx-auto grid max-w-3xl items-center gap-8 p-8 md:grid-cols-[200px_1fr] md:p-12'
-          : 'grid items-center gap-10 p-8 md:grid-cols-[240px_1fr] md:p-12'
+          : 'grid items-center gap-10 md:grid-cols-[240px_1fr]'
       }
     >
       {compact ? null : (
@@ -57,7 +61,7 @@ export function AboutCard({ compact }: { compact?: boolean }) {
         </>
       )}
       <Polaroid src="/images/about_me.jpg" caption={strings.polaroidCaption} large={!compact} />
-      <p className="whitespace-pre-wrap leading-relaxed text-nav">{strings.about}</p>
+      <Copy variant="body" className="whitespace-pre-wrap">{strings.about}</Copy>
     </Card>
   )
 }
@@ -76,7 +80,7 @@ export function ExperiencePanel({ items }: { items: ExpItem[] }) {
           className="gap-6 md:grid-cols-[200px_1fr] md:p-10"
         />
       ) : (
-        <p className="text-center text-nav">{strings.labelEmptyResult}</p>
+        <Copy className="text-center" variant="nav">{strings.labelEmptyResult}</Copy>
       )}
     </>
   )
@@ -116,8 +120,8 @@ export function ChannelCard({
           className="h-16 w-16 rounded-full bg-white object-cover"
         />
         <div className="flex-1">
-          <h3 className="font-heading text-2xl font-bold">{channelName}</h3>
-          <p className="text-nav">{handle}</p>
+          <Heading as="h3" size="title">{channelName}</Heading>
+          <Copy variant="nav">{handle}</Copy>
           {channel.slogan ? <p className="mt-1 text-sm text-ink">{channel.slogan}</p> : null}
         </div>
         {social.channelUrl ? (
@@ -127,7 +131,7 @@ export function ChannelCard({
         ) : null}
       </div>
       {channel.description ? (
-        <p className="mt-4 whitespace-pre-wrap text-nav">{channel.description}</p>
+        <Copy variant="nav" className="mt-4 whitespace-pre-wrap">{channel.description}</Copy>
       ) : null}
       <StatRow
         size="sm"
@@ -145,9 +149,9 @@ export function ChannelCard({
       ) : null}
       {channel.tags.length > 0 ? (
         <>
-          <h3 className="mb-3 mt-8 text-center font-heading text-lg font-bold md:text-left">
+          <Heading as="h3" size="sub" className="mb-3 mt-8 text-center md:text-left">
             {strings.youtubeSectionTags}
-          </h3>
+          </Heading>
           <TagList
             tags={channel.tags}
             selected={selectedTag}
@@ -163,12 +167,12 @@ export function ChannelCard({
 export function VideoPlayer({ video, onClose }: { video: YoutubeVideo; onClose: () => void }) {
   return (
     <Overlay>
-      <Card className="w-full max-w-2xl p-4">
+      <Card pad="sm" className="w-full max-w-2xl">
         <p className="mb-3 line-clamp-2 font-heading">{video.title}</p>
         <YoutubeEmbed videoId={video.id} />
-        <button type="button" className="mt-3 text-sm text-nav" onClick={onClose}>
+        <TextButton className="mt-3 font-normal" onClick={onClose}>
           {strings.youtubeClosePlayer}
-        </button>
+        </TextButton>
       </Card>
     </Overlay>
   )

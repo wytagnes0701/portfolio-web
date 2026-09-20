@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react'
-import { Card, Field, Overlay } from './ui'
+import { Card, Field, Heading, Overlay, TechoButton, TextButton } from './ui'
 
 export function TechoDialog({
   title,
@@ -20,18 +20,14 @@ export function TechoDialog({
 }) {
   return (
     <Overlay>
-      <Card className="w-full max-w-md bg-paper p-6 text-ink">
-        {title ? <h2 className="mb-3 text-lg font-medium">{title}</h2> : null}
+      <Card className="card-dialog">
+        {title ? <Heading as="h2" size="dialog" className="mb-3">{title}</Heading> : null}
         {children}
         <div className="mt-4 flex justify-end gap-3">
           {dismissLabel && onDismiss ? (
-            <button type="button" className="text-sm font-medium text-nav" onClick={onDismiss}>
-              {dismissLabel}
-            </button>
+            <TextButton onClick={onDismiss}>{dismissLabel}</TextButton>
           ) : null}
-          <button type="button" className="text-sm font-medium text-nav" onClick={onConfirm}>
-            {confirmLabel}
-          </button>
+          <TextButton onClick={onConfirm}>{confirmLabel}</TextButton>
         </div>
         {onClose ? (
           <button type="button" className="sr-only" onClick={onClose}>
@@ -72,9 +68,9 @@ export function PassCodeDialog({
 
   return (
     <Overlay>
-      <Card className="w-full max-w-md bg-paper p-6 text-ink">
+      <Card className="card-dialog">
         <form onSubmit={submit}>
-          <h2 className="mb-4 text-lg font-medium">Enter Pass Code for master login</h2>
+          <Heading as="h2" size="dialog" className="mb-4">Enter Pass Code for master login</Heading>
           <Field
             label="PassCode"
             value={passcode}
@@ -93,12 +89,8 @@ export function PassCodeDialog({
             }
           />
           <div className="mt-5 flex justify-end gap-3">
-            <button type="button" onClick={onDismiss} className="rounded-[10px] bg-techo-blue px-4 py-2 text-ink">
-              Cancel
-            </button>
-            <button type="submit" className="rounded-[10px] bg-techo-blue px-4 py-2 text-ink">
-              Confirm
-            </button>
+            <TechoButton onClick={onDismiss}>Cancel</TechoButton>
+            <TechoButton type="submit">Confirm</TechoButton>
           </div>
         </form>
       </Card>

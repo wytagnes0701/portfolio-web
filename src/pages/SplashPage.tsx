@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signOut } from 'firebase/auth'
 import { LoadingOverlay, TechoDialog } from '../components/Dialogs'
+import { Copy } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { getFirebase, isFirebaseConfigured } from '../data/firebase'
 import { strings } from '../data/strings'
@@ -51,7 +52,7 @@ export function SplashPage() {
       </div>
       {error ? (
         <TechoDialog title={error} confirmLabel={strings.buttonOk} onConfirm={() => navigate('/login')}>
-          <p className="text-sm text-ink/80">{strings.missingFirebase}</p>
+          <Copy variant="soft">{strings.missingFirebase}</Copy>
         </TechoDialog>
       ) : null}
     </div>

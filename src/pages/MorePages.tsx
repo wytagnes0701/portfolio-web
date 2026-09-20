@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { QRCodeSVG } from 'qrcode.react'
 import { TechoDialog } from '../components/Dialogs'
 import { AboutCard } from '../components/sections'
-import { Card, ContactGroup, PageWrap, SectionHeading, SettingsRow } from '../components/ui'
+import { Card, ContactGroup, PageWrap, SectionHeading, SettingsRow, TwoCol } from '../components/ui'
 import { developerContacts, youtuberContacts } from '../data/contacts'
 import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
@@ -14,7 +14,7 @@ export function MorePage() {
   return (
     <PageWrap>
       <SectionHeading eyebrow="menu" title={strings.labelMore} />
-      <Card className="mx-auto max-w-xl p-4">
+      <Card pad="sm" className="mx-auto max-w-xl">
         <SettingsRow icon="/icons/ic_personal.svg" label={strings.labelAbout} onClick={() => navigate('/about')} />
         <SettingsRow icon="/icons/icon_info.svg" label={strings.labelContact} onClick={() => navigate('/contact')} />
       </Card>
@@ -49,7 +49,7 @@ export function ContactPage() {
   return (
     <PageWrap>
       <SectionHeading eyebrow={strings.contactEyebrow} title={strings.labelContact} />
-      <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
+      <TwoCol className="mx-auto max-w-4xl">
         <ContactGroup
           title={strings.contactDeveloper}
           subtitle={strings.developerInvite}
@@ -62,13 +62,13 @@ export function ContactPage() {
           items={youtuberContacts(snapshot.youtubeChannel, youtubeSocial)}
           variant="row"
         />
-      </div>
+      </TwoCol>
       {picker ? (
         <TechoDialog title={strings.selectContactDisplay} confirmLabel={strings.cancel} onConfirm={() => setPicker(null)}>
           <div className="flex flex-col gap-2">
             <button
               type="button"
-              className="text-left text-nav"
+              className="btn-plain"
               onClick={() => {
                 setQr(picker)
                 setPicker(null)
@@ -78,7 +78,7 @@ export function ContactPage() {
             </button>
             <button
               type="button"
-              className="text-left text-nav"
+              className="btn-plain"
               onClick={() => {
                 window.open(webUrl(picker), '_blank')
                 setPicker(null)

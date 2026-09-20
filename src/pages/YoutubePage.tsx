@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { ChannelCard, VideoPlayer } from '../components/sections'
-import { ContactGroup, MediaCard, MediaGrid, PageWrap, SectionHeading } from '../components/ui'
+import { ContactGroup, Copy, Heading, MediaCard, MediaGrid, PageWrap, SectionHeading } from '../components/ui'
 import { youtubeCollabContacts, youtuberSocialContacts } from '../data/contacts'
 import { usePortfolio } from '../data/portfolio-context'
 import { strings } from '../data/strings'
@@ -30,9 +30,9 @@ export function YoutubePage() {
         onSelectTag={setSelectedTag}
       />
 
-      <h3 className="mb-6 text-center font-heading text-2xl font-bold">{strings.featuredVideos}</h3>
+      <Heading as="h3" size="title" className="mb-6 text-center">{strings.featuredVideos}</Heading>
       {videos.length === 0 ? (
-        <p className="py-6 text-center text-nav">{strings.youtubeEmptyVideos}</p>
+        <Copy variant="empty">{strings.youtubeEmptyVideos}</Copy>
       ) : (
         <MediaGrid tight>
           {videos.map((video) => (

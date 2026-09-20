@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { LoadingOverlay, PassCodeDialog } from '../components/Dialogs'
-import { Badge, Card, Field, Pill } from '../components/ui'
+import { Badge, Card, Copy, Field, Heading, Pill } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { EMAIL_PATTERN, SITE_VERSION, strings, VALID_PASSWORD_LENGTH } from '../data/strings'
 
@@ -49,12 +49,12 @@ export function LoginPage() {
     <div className="desk-bg min-h-dvh">
       <div className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center px-6 py-16">
         <Badge>{strings.heroBadge}</Badge>
-        <p className="mb-6 mt-3 text-center font-heading text-4xl font-bold">
+        <Heading as="p" size="page" className="mb-6 mt-3 text-center">
           {strings.heroHello} <span className="text-gold">{strings.heroName}</span>
-        </p>
-        <Card className="p-8 md:p-10">
+        </Heading>
+        <Card pad="lg">
           <form onSubmit={onSubmit}>
-            <h1 className="mb-6 font-heading text-2xl font-bold">{strings.labelLogin}</h1>
+            <Heading as="h1" size="title" className="mb-6">{strings.labelLogin}</Heading>
             <Field
               label={strings.loginEmail}
               value={email}
@@ -82,14 +82,14 @@ export function LoginPage() {
                 </button>
               }
             />
-            {message ? <p className="mt-3 text-sm text-red-700">{message}</p> : null}
+            {message ? <Copy variant="error" className="mt-3">{message}</Copy> : null}
             <Pill type="submit" disabled={!allowLogin || loading} className="mt-6 disabled:opacity-40">
               {strings.login.toUpperCase()}
             </Pill>
           </form>
         </Card>
         <div className="mt-8 flex items-end justify-between">
-          <p className="text-xs text-nav">{strings.appVersionCaption(SITE_VERSION)}</p>
+          <Copy variant="caption">{strings.appVersionCaption(SITE_VERSION)}</Copy>
           <Pill variant="white" className="text-sm" onClick={() => setShowPasscode(true)}>
             {strings.labelMaster.toUpperCase()}
           </Pill>

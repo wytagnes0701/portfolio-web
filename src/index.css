@@ -163,3 +163,153 @@ body {
   background: color-mix(in srgb, var(--color-washi-coral) 55%, white);
 }
 
+@layer components {
+  .heading-hero {
+    @apply font-heading text-4xl font-bold leading-tight md:text-[60px];
+  }
+
+  .heading-page {
+    @apply font-heading text-4xl font-bold;
+  }
+
+  .heading-section {
+    @apply font-heading text-[30px] font-bold md:text-4xl;
+  }
+
+  .heading-card {
+    @apply font-heading text-xl font-bold md:text-2xl;
+  }
+
+  .heading-title {
+    @apply font-heading text-2xl font-bold;
+  }
+
+  .heading-project {
+    @apply font-heading text-[22px] font-bold leading-snug;
+  }
+
+  .heading-dialog {
+    @apply text-lg font-medium;
+  }
+
+  .heading-sub {
+    @apply font-heading text-lg font-bold;
+  }
+
+  .heading-brand {
+    @apply font-heading text-lg font-medium;
+  }
+
+  .heading-stat {
+    @apply font-heading text-3xl font-bold md:text-4xl;
+  }
+
+  .copy-muted {
+    @apply text-sm text-nav;
+  }
+
+  .copy-caption {
+    @apply text-xs text-nav;
+  }
+
+  .copy-body {
+    @apply leading-relaxed text-nav;
+  }
+
+  .copy-lede {
+    @apply text-base leading-relaxed text-nav md:text-lg;
+  }
+
+  .copy-sm {
+    @apply text-sm leading-relaxed text-nav;
+  }
+
+  .copy-soft {
+    @apply text-sm leading-relaxed text-ink/80;
+  }
+
+  .copy-empty {
+    @apply py-6 text-center text-nav;
+  }
+
+  .copy-label {
+    @apply text-sm font-medium text-ink;
+  }
+
+  .copy-error {
+    @apply text-sm text-red-700;
+  }
+
+  .badge {
+    @apply mx-auto w-fit rounded-full bg-[#eceae6] px-4 py-1 text-sm text-nav;
+  }
+
+  .btn-ink {
+    @apply inline-flex w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white;
+  }
+
+  .btn-techo {
+    @apply rounded-[10px] bg-techo-blue px-4 py-2 text-ink;
+  }
+
+  .btn-text {
+    @apply text-sm font-medium text-nav;
+  }
+
+  .btn-icon {
+    @apply flex h-10 w-10 items-center justify-center;
+  }
+
+  .btn-plain {
+    @apply text-left text-nav;
+  }
+
+  .icon-mono {
+    @apply h-6 w-6 brightness-0;
+  }
+
+  .card-dialog {
+    @apply w-full max-w-md bg-paper p-6 text-ink;
+  }
+
+  .card-pad {
+    @apply p-6 md:p-8;
+  }
+
+  .grid-2 {
+    @apply grid gap-6 md:grid-cols-2;
+  }
+
+  .list-copy {
+    @apply mt-2 space-y-1 text-sm leading-relaxed text-ink/80;
+  }
+
+  .nav-link {
+    @apply whitespace-nowrap text-sm text-nav hover:text-ink;
+  }
+
+  .nav-link.is-active {
+    @apply text-ink;
+  }
+
+  .nav-link-mobile {
+    @apply rounded-lg px-2 py-2 text-nav;
+  }
+
+  .tab-btn {
+    @apply rounded-full bg-white px-4 py-2 text-sm text-ink/70;
+  }
+
+  .tab-btn.is-active {
+    @apply bg-gold text-white;
+  }
+
+  .tag-pill {
+    @apply rounded-full bg-white px-4 py-2 text-sm text-nav shadow-sm;
+  }
+
+  .tag-pill.is-selected {
+    @apply bg-gold-soft text-gold;
+  }
+}
+

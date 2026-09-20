@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TechoDialog } from '../components/Dialogs'
-import { BackLink, CoverPager, LinkifiedLine, PageWrap, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
+import { BackLink, Copy, CopyList, CoverPager, Heading, IconButton, InkButton, LinkifiedLine, PageWrap, SkillIcon, Thumbnail, YoutubeEmbed } from '../components/ui'
 import { usePortfolio } from '../data/portfolio-context'
 import { SKILLS, skillsFromTagIndex } from '../data/skills'
 import { strings } from '../data/strings'
@@ -49,13 +49,9 @@ export function ProjectDetailPage() {
   ]
 
   const backButton = (className: string) => (
-    <button
-      type="button"
-      onClick={() => navigate('/projects')}
-      className={className}
-    >
+    <InkButton onClick={() => navigate('/projects')} className={className}>
       {strings.labelBack}
-    </button>
+    </InkButton>
   )
 
   const skillsRow =
@@ -70,50 +66,50 @@ export function ProjectDetailPage() {
   const furtherInfo =
     project.furtherInfo.length > 0 ? (
       <section className="mt-8">
-        <h2 className="text-sm font-medium text-ink">{strings.furtherInfoTitle}</h2>
-        <ul className="mt-2 space-y-1 text-sm leading-relaxed text-ink/80">
+        <Copy as="h2" variant="label">{strings.furtherInfoTitle}</Copy>
+        <CopyList>
           {project.furtherInfo.map((line) => (
             <LinkifiedLine key={line} text={line} />
           ))}
-        </ul>
+        </CopyList>
       </section>
     ) : null
 
   const copy = videos.length > 0 ? (
     <div>
-      <h1 className="font-heading text-[22px] font-bold leading-snug">{project.title}</h1>
+      <Heading as="h1" size="project">{project.title}</Heading>
       {videoParagraphs.length > 0 ? (
         <div className="mt-4 space-y-3">
           {videoParagraphs.map((line) => (
-            <p key={line} className="text-sm leading-relaxed text-nav">
+            <Copy key={line} variant="sm">
               {line}
-            </p>
+            </Copy>
           ))}
         </div>
       ) : null}
       {skillsRow}
       {furtherInfo}
-      {backButton('mt-8 hidden w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white lg:inline-flex')}
+      {backButton('mt-8 hidden lg:inline-flex')}
     </div>
   ) : (
     <div>
-      <h1 className="font-heading text-[22px] font-bold leading-snug">{project.title}</h1>
+      <Heading as="h1" size="project">{project.title}</Heading>
       {project.basicInfo ? (
-        <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-nav">{displayBasicInfo(project.basicInfo)}</p>
+        <Copy variant="sm" className="mt-4 whitespace-pre-wrap">{displayBasicInfo(project.basicInfo)}</Copy>
       ) : null}
       {showDescription ? (
         <section className="mt-8">
-          <h2 className="text-sm font-medium text-ink">{strings.descriptionTitle}</h2>
-          <ul className="mt-2 space-y-1 text-sm leading-relaxed text-ink/80">
+          <Copy as="h2" variant="label">{strings.descriptionTitle}</Copy>
+          <CopyList>
             {project.description.map((line) => (
               <LinkifiedLine key={line} text={line} />
             ))}
-          </ul>
+          </CopyList>
         </section>
       ) : null}
       {skillsRow}
       {furtherInfo}
-      {backButton('mt-8 inline-flex w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white')}
+      {backButton('mt-8')}
     </div>
   )
 
@@ -138,22 +134,18 @@ export function ProjectDetailPage() {
     <PageWrap className="py-6 lg:py-12">
       <div className={videos.length > 0 ? 'mx-auto max-w-[980px]' : undefined}>
         <div className="mb-4 flex justify-end gap-1">
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center"
-            aria-label={strings.gallery}
+          <IconButton
+            label={strings.gallery}
             onClick={() => navigate(`/gallery/${project.id}`)}
           >
-            <img src={publicUrl('/icons/icon_gallery.svg')} alt="" className="h-6 w-6 brightness-0" />
-          </button>
-          <button
-            type="button"
-            className="flex h-10 w-10 items-center justify-center"
-            aria-label={strings.info}
+            <img src={publicUrl('/icons/icon_gallery.svg')} alt="" className="icon-mono" />
+          </IconButton>
+          <IconButton
+            label={strings.info}
             onClick={() => setShowIcons(true)}
           >
-            <img src={publicUrl('/icons/icon_info.svg')} alt="" className="h-6 w-6 brightness-0" />
-          </button>
+            <img src={publicUrl('/icons/icon_info.svg')} alt="" className="icon-mono" />
+          </IconButton>
         </div>
         <ProjectSplit
           hasVideo={videos.length > 0}
@@ -162,7 +154,7 @@ export function ProjectDetailPage() {
           rest={restVideos}
           mobileBack={
             videos.length > 0
-              ? backButton('mt-2 inline-flex w-fit bg-ink px-5 py-2.5 text-sm font-medium tracking-wide text-white lg:hidden')
+              ? backButton('mt-2 lg:hidden')
               : null
           }
         />
@@ -228,7 +220,7 @@ export function GalleryPage() {
   return (
     <PageWrap>
       <BackLink onClick={() => navigate(-1)}>← Back</BackLink>
-      <h1 className="mb-8 font-heading text-4xl font-bold">{strings.gallery}</h1>
+      <Heading as="h1" size="page" className="mb-8">{strings.gallery}</Heading>
       <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         {images.map((src) => (
           <Thumbnail key={src} src={src} onClick={() => setActive(src)} />

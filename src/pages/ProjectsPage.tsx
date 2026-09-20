@@ -34,7 +34,7 @@ export function ProjectsPage() {
       </div>
 
       {filtersOpen ? (
-        <Card className="mb-8 grid gap-4 p-6 md:grid-cols-2">
+        <Card pad="md" className="mb-8 grid gap-4 md:grid-cols-2">
           <Select value={year} onChange={(event) => setYear(event.target.value)}>
             <option value="">{strings.labelYear}</option>
             {YEAR_FILTERS.map((item) => (

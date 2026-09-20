@@ -26,7 +26,7 @@ export function SiteHeader() {
           className="flex shrink-0 items-center gap-2.5"
         >
           <img src={publicUrl('/images/about_me.jpg')} alt="" className="h-8 w-8 rounded-full object-cover" />
-          <span className="font-heading text-lg font-medium">{strings.brandName}</span>
+          <span className="heading-brand">{strings.brandName}</span>
         </button>
         <nav className="hidden items-center gap-x-5 lg:flex">
           {links.map((link) => {
@@ -35,7 +35,7 @@ export function SiteHeader() {
               <Link
                 key={link.to}
                 to={link.to}
-                className={`whitespace-nowrap text-sm ${active ? 'text-ink' : 'text-nav hover:text-ink'}`}
+                className={active ? 'nav-link is-active' : 'nav-link'}
               >
                 {link.label}
               </Link>
@@ -57,7 +57,7 @@ export function SiteHeader() {
               key={link.to}
               to={link.to}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 text-nav"
+              className="nav-link-mobile"
             >
               {link.label}
             </Link>
@@ -76,7 +76,7 @@ export function SiteFooter({
   email: string
 }) {
   return (
-    <footer className="py-12 text-center text-sm text-nav">
+    <footer className="py-12 text-center copy-muted">
       <p>{strings.footerCopy}</p>
       <p className="mt-1">{strings.footerFrom}</p>
       {email ? <p className="mt-3 text-xs">{email}</p> : null}

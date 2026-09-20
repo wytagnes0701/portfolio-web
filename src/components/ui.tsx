@@ -14,13 +14,104 @@ export function PageWrap({ children, className }: { children: ReactNode; classNa
 export function Card({
   children,
   className,
+  pad,
   as: Tag = 'div',
 }: {
   children: ReactNode
   className?: string
+  pad?: 'sm' | 'md' | 'lg' | 'xl'
   as?: 'div' | 'article' | 'form' | 'section'
 }) {
-  return <Tag className={cx('site-card', className)}>{children}</Tag>
+  const pads = {
+    sm: 'p-4',
+    md: 'card-pad',
+    lg: 'p-8 md:p-10',
+    xl: 'p-8 md:p-12',
+  } as const
+  return <Tag className={cx('site-card', pad && pads[pad], className)}>{children}</Tag>
+}
+
+const headingClass = {
+  hero: 'heading-hero',
+  page: 'heading-page',
+  section: 'heading-section',
+  card: 'heading-card',
+  title: 'heading-title',
+  project: 'heading-project',
+  dialog: 'heading-dialog',
+  sub: 'heading-sub',
+  brand: 'heading-brand',
+  stat: 'heading-stat',
+} as const
+
+export function Heading({
+  as: Tag = 'h2',
+  size = 'section',
+  className,
+  children,
+}: {
+  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span'
+  size?: keyof typeof headingClass
+  className?: string
+  children: ReactNode
+}) {
+  return <Tag className={cx(headingClass[size], className)}>{children}</Tag>
+}
+
+const copyClass = {
+  muted: 'copy-muted',
+  caption: 'copy-caption',
+  body: 'copy-body',
+  lede: 'copy-lede',
+  sm: 'copy-sm',
+  soft: 'copy-soft',
+  empty: 'copy-empty',
+  label: 'copy-label',
+  error: 'copy-error',
+  nav: 'text-nav',
+} as const
+
+export function Copy({
+  as: Tag = 'p',
+  variant = 'muted',
+  className,
+  children,
+}: {
+  as?: 'p' | 'span' | 'div' | 'label' | 'li' | 'h2'
+  variant?: keyof typeof copyClass
+  className?: string
+  children?: ReactNode
+}) {
+  return <Tag className={cx(copyClass[variant], className)}>{children}</Tag>
+}
+
+export function TextButton({ className, type = 'button', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} className={cx('btn-text', className)} {...props} />
+}
+
+export function TechoButton({ className, type = 'button', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} className={cx('btn-techo', className)} {...props} />
+}
+
+export function InkButton({ className, type = 'button', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} className={cx('btn-ink', className)} {...props} />
+}
+
+export function IconButton({
+  label,
+  className,
+  type = 'button',
+  ...props
+}: { label: string } & ButtonHTMLAttributes<HTMLButtonElement>) {
+  return <button type={type} aria-label={label} className={cx('btn-icon', className)} {...props} />
+}
+
+export function CopyList({ children, className }: { children: ReactNode; className?: string }) {
+  return <ul className={cx('list-copy', className)}>{children}</ul>
+}
+
+export function TwoCol({ children, className }: { children: ReactNode; className?: string }) {
+  return <div className={cx('grid-2', className)}>{children}</div>
 }
 
 const pillClass = {
@@ -68,7 +159,7 @@ export function Pill({
 }
 
 export function Badge({ children }: { children: ReactNode }) {
-  return <p className="mx-auto w-fit rounded-full bg-[#eceae6] px-4 py-1 text-sm text-nav">{children}</p>
+  return <p className="badge">{children}</p>
 }
 
 export function Tag({
@@ -82,11 +173,7 @@ export function Tag({
 }) {
   return (
     <span
-      className={cx(
-        'rounded-full px-4 py-2 text-sm shadow-sm',
-        selected ? 'bg-gold-soft text-gold' : 'bg-white text-nav',
-        className,
-      )}
+      className={cx('tag-pill', selected && 'is-selected', className)}
     >
       {children}
     </span>
@@ -96,7 +183,7 @@ export function Tag({
 function tagClass(variant: 'pill' | 'pillar' | 'price', selected: boolean) {
   if (variant === 'pillar') return 'tag-pillar'
   if (variant === 'price') return cx('tag-price', selected && 'is-selected')
-  return cx('rounded-full px-4 py-2 text-sm shadow-sm', selected ? 'bg-gold-soft text-gold' : 'bg-white text-nav')
+  return cx('tag-pill', selected && 'is-selected')
 }
 
 export function TagList({
@@ -157,7 +244,7 @@ export function Tabs({
           key={item.id}
           type="button"
           onClick={() => onChange(index)}
-          className={cx('rounded-full px-4 py-2 text-sm', value === index ? 'bg-gold text-white' : 'bg-white text-ink/70')}
+          className={cx('tab-btn', value === index && 'is-active')}
         >
           {item.label}
         </button>
@@ -171,14 +258,14 @@ export function Stat({ value, label, size = 'lg' }: { value: string; label: stri
     return (
       <div className="rounded-xl bg-[#f4efe6] px-3 py-3 text-center">
         <p className="font-heading font-bold">{value}</p>
-        <p className="text-xs text-nav">{label}</p>
+        <Copy variant="caption">{label}</Copy>
       </div>
     )
   }
   return (
     <div className="min-w-[110px] px-5">
-      <p className="font-heading text-3xl font-bold md:text-4xl">{value}</p>
-      <p className="mt-1 text-xs text-nav">{label}</p>
+      <Heading as="p" size="stat">{value}</Heading>
+      <Copy variant="caption" className="mt-1">{label}</Copy>
     </div>
   )
 }
@@ -233,7 +320,7 @@ export function BackLink({
   className?: string
 }) {
   return (
-    <button type="button" onClick={onClick} className={cx('mb-6 text-sm text-nav', className)}>
+    <button type="button" onClick={onClick} className={cx('copy-muted mb-6', className)}>
       {children}
     </button>
   )
@@ -254,16 +341,16 @@ export function Field({
 } & InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className="mb-4">
-      <label className="mb-1 block text-sm text-nav">{label}</label>
+      <Copy as="label" className="mb-1 block">{label}</Copy>
       <div className="relative">
         <input
           {...inputProps}
           className={cx('w-full border-b border-nav bg-transparent py-2 outline-none', trailing ? 'pr-12' : '', className)}
         />
-        {trailing ? <div className="absolute right-0 top-1/2 -translate-y-1/2 text-sm text-nav">{trailing}</div> : null}
+        {trailing ? <div className="absolute right-0 top-1/2 -translate-y-1/2 copy-muted">{trailing}</div> : null}
       </div>
-      {error ? <p className="mt-1 text-sm text-red-700">{error}</p> : null}
-      {!error && hint ? <p className="mt-1 text-sm text-nav">{hint}</p> : null}
+      {error ? <Copy variant="error" className="mt-1">{error}</Copy> : null}
+      {!error && hint ? <Copy className="mt-1">{hint}</Copy> : null}
     </div>
   )
 }
@@ -283,7 +370,7 @@ export function SettingsRow({ icon, label, value, href, onClick }: ContactItem) 
       <ContactIcon src={icon} className="h-6 w-6" />
       {value ? (
         <span className="min-w-0 flex-1">
-          <span className="block text-xs text-nav">{label}</span>
+          <Copy as="span" variant="caption" className="block">{label}</Copy>
           <span className="block truncate text-ink">{value}</span>
         </span>
       ) : (
@@ -320,10 +407,10 @@ export function ContactLine({
   if (!value) return null
   const body = (
     <>
-      <p className="flex items-center justify-center gap-2 text-xs text-nav">
+      <Copy variant="caption" className="flex items-center justify-center gap-2">
         <ContactIcon src={icon} />
         {label}
-      </p>
+      </Copy>
       <p className="mt-1 break-all font-heading text-gold">{value}</p>
     </>
   )
@@ -352,10 +439,10 @@ export function ContactGroup({
   className?: string
 }) {
   return (
-    <Card className={cx('p-6 md:p-8', className)}>
-      <h3 className="text-center font-heading text-xl font-bold md:text-2xl">{title}</h3>
+    <Card pad="md" className={className}>
+      <Heading as="h3" size="card" className="text-center">{title}</Heading>
       {kicker ? <p className="mt-1 text-center font-heading text-lg">{kicker}</p> : null}
-      {subtitle ? <p className="mt-2 text-center text-sm text-nav">{subtitle}</p> : null}
+      {subtitle ? <Copy className="mt-2 text-center">{subtitle}</Copy> : null}
       <div className={variant === 'line' ? 'mt-6 space-y-3' : 'mt-4'}>
         {items.map((item) =>
           variant === 'line' ? (
@@ -551,8 +638,8 @@ export function SectionHeading({
   return (
     <div className={align === 'center' ? 'mb-10 text-center' : 'mb-8'}>
       <p className="eyebrow">{eyebrow}</p>
-      <h2 className="mt-1 font-heading text-[30px] font-bold md:text-4xl">{title}</h2>
-      {subtitle ? <p className="mt-2 text-sm text-nav">{subtitle}</p> : null}
+      <Heading className="mt-1">{title}</Heading>
+      {subtitle ? <Copy className="mt-2">{subtitle}</Copy> : null}
     </div>
   )
 }
@@ -564,6 +651,7 @@ export function Section({
   subtitle,
   children,
   className,
+  spaced,
 }: {
   id?: string
   eyebrow: string
@@ -571,9 +659,10 @@ export function Section({
   subtitle?: string
   children: ReactNode
   className?: string
+  spaced?: boolean
 }) {
   return (
-    <section id={id} className={cx('scroll-mt-24', className)}>
+    <section id={id} className={cx('scroll-mt-24', spaced && 'mt-24', className)}>
       <SectionHeading eyebrow={eyebrow} title={title} subtitle={subtitle} />
       {children}
     </section>
@@ -624,19 +713,19 @@ export function TimelineCard({
   const whenList = Array.isArray(when) ? when : [when]
   const titleList = Array.isArray(titles) ? titles : [titles]
   return (
-    <Card as="article" className={cx('grid gap-4 p-6 md:grid-cols-[180px_1fr] md:p-8', className)}>
+    <Card as="article" pad="md" className={cx('grid gap-4 md:grid-cols-[180px_1fr]', className)}>
       <div>
         {whenList.map((item) => (
-          <p key={item} className="mb-2 text-sm font-medium text-nav">
+          <Copy key={item} className="mb-2 font-medium">
             {item}
-          </p>
+          </Copy>
         ))}
       </div>
       <div>
         {titleList.map((item) => (
-          <h3 key={item} className="mb-2 font-heading text-2xl font-bold">
+          <Heading as="h3" size="title" key={item} className="mb-2">
             {item}
-          </h3>
+          </Heading>
         ))}
         {subtitle ? <p className="mt-1 text-sm">{subtitle}</p> : null}
         {body ? <p className="mt-3 whitespace-pre-wrap text-ink/80">{body}</p> : null}
